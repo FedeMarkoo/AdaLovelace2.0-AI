@@ -1,21 +1,28 @@
 package Acciones;
 
-import java.util.Scanner;
+import testeo.Main;
+import testeo.MainV;
 
 public class Basico {
 
 	public static void decir(String texto) {
-		System.out.println(texto);
+		MainV.dice.append(texto);
 	}
 
 	public static void caminar(int x, int y) {
-		System.out.println("x: " + x + "  y: " + y);
+		decir("x: " + x + "  y: " + y);
 	}
 
 	public static String escuchar() {
-		Scanner scanner = new Scanner(System.in);
-		String nextLine = scanner.nextLine();
-		scanner.close();
-		return nextLine;
+		while (!MainV.escucha.getText().contains(".")) 
+			try {
+				Thread.sleep(500);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+		String a=MainV.escucha.getText().replace(".", "");
+		MainV.escucha.setText("");
+		return a.trim();
 	}
 }

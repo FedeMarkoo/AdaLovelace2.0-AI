@@ -6,13 +6,22 @@ import Ada.AdaLovelace;
 
 public class Main {
 
+	private static String nextLine;
+	public static Scanner scan;
+
 	public static void main(String[] a) {
 		AdaLovelace ada = new AdaLovelace();
-		Scanner scan = new Scanner(System.in);
-		boolean o =true;
-		while(o) {
-			ada.responder(scan.nextLine());
+		boolean o = true;
+		scan = new Scanner(System.in);
+		while (o) {
+			try {
+				nextLine = scan.nextLine();
+				ada.responder(nextLine);
+			} catch (Exception e) {
+				System.out.println("error en scaner");
+				scan.close();
+				return;
+			}
 		}
-		scan.close();
 	}
 }

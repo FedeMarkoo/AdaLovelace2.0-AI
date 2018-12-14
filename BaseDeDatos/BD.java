@@ -22,16 +22,33 @@ public class BD {
 			session = factory.openSession();
 		}
 
+		String verbo = "", adjetivo = "", sustantivo = "";
+
 		for (String cad : texto.split(" ")) {
 
 			String busqueda = buscar(cad, MapeoDiccionario.class);
 
 			if (busqueda == null) {
-				Basico.decir("No identifico que tipo de palabra es " + cad + ".\nNecesito que me lo digas");
+				Basico.decir("No identifico que tipo de palabra es " + cad
+						+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
 				ingresarTipo(cad, Basico.escuchar());
+				busqueda = buscar(cad, MapeoDiccionario.class);
 			}
+
+			if (busqueda != null)
+				switch (busqueda) {
+				case "verbo":
+					verbo = cad;
+					break;
+				case "adjetivo":
+					adjetivo = cad;
+					break;
+				case "sustantivo":
+					sustantivo = cad;
+					break;
+				}
 		}
-		return null;
+		return new String[] { sustantivo, verbo, adjetivo };
 	}
 
 	@SuppressWarnings("all")

@@ -3,17 +3,18 @@ package Acciones;
 import Objetos.Objeto;
 
 public class Ultimo extends Objeto{
-
-	public String realizar(String texto) {
+	
+	
+	public String responder(String texto) {
 		Basico.decir("No entiendo lo que me estas pidiendo... \nEs un sinomimo de una accion ya registrada?");
-		if (Basico.escuchar().toLowerCase().contains("si")) {
+		if (Basico.escuchar().contains("si")) {
 
 		} else {
 			Basico.decir("Desea agregar el codigo?");
 			if (Basico.escuchar().toLowerCase().contains("si")) {
 				Basico.decir("Ingreselo");
 				String codigo = Basico.escuchar();
-				escribirCodigo(codigo);
+				escribirMetodo(codigo);
 				return "Carga de codigo realizada con exito";
 			}
 
@@ -21,7 +22,7 @@ public class Ultimo extends Objeto{
 		return "No tengo ni idea que hacer";
 	}
 
-	private void escribirCodigo(String codigo) {
+	private void escribirMetodo(String codigo) {
 
 		/**
 		 * bardo para despues....
