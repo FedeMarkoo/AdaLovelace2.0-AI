@@ -1,6 +1,8 @@
 package Acciones;
 
-public class Ultimo {
+import Objetos.Objeto;
+
+public class Ultimo extends Objeto{
 
 	public String realizar(String texto) {
 		Basico.decir("No entiendo lo que me estas pidiendo... \nEs un sinomimo de una accion ya registrada?");

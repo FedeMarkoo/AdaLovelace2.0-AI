@@ -10,6 +10,11 @@ public class MapeoDiccionario {
 		this.tipo = tipo;
 	}
 
+	public MapeoDiccionario() {
+		this.palabra = palabra;
+		this.tipo = tipo;
+	}
+
 	public String getTipo() {
 		return tipo;
 	}

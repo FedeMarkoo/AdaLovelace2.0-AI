@@ -5,6 +5,8 @@ public class MapeoAcciones {
 	private String objeto;
 	private String accion;
 
+	public MapeoAcciones() {}
+	
 	public String getObjeto() {
 		return objeto;
 	}

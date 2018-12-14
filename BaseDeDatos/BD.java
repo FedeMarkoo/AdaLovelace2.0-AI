@@ -37,12 +37,12 @@ public class BD {
 	@SuppressWarnings("all")
 	public static String buscar(String texto, Class clase) {
 		try {
-			Criteria cb = session.createCriteria(clase).add(Restrictions.eq("clase", texto));
+			Criteria cb = session.createCriteria(clase).add(Restrictions.eq("palabra", texto));
 			if (cb != null && cb.list() != null && !cb.list().isEmpty()) {
 				if (MapeoAcciones.class == clase)
-					return ((MapeoAcciones) cb).getAccion();
+					return ((MapeoAcciones) cb.uniqueResult()).getAccion();
 				if (MapeoDiccionario.class == clase)
-					return ((MapeoDiccionario) cb).getTipo();
+					return ((MapeoDiccionario) cb.uniqueResult()).getTipo();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

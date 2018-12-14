@@ -5,6 +5,8 @@ public class MapeoObjetos {
 	private String objeto;
 	private int cantidadDeLlamados;
 
+	public MapeoObjetos() {}
+	
 	public String getObjeto() {
 		return objeto;
 	}
