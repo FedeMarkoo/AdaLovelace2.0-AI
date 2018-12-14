@@ -14,7 +14,7 @@ public class AdaLovelace extends Objeto {
 	}
 
 	private String[] decodificar(String texto) {
-		String regex = "el|la|las|los";
+		String regex = "\\W(?:el|la|las|los)\\W";
 		texto = texto.replaceAll(regex, "");
 
 		return BD.decodificar(texto);
