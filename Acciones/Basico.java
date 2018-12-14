@@ -1,6 +1,5 @@
 package Acciones;
 
-import testeo.Main;
 import testeo.MainV;
 
 public class Basico {

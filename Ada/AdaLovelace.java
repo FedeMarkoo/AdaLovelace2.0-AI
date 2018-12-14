@@ -1,8 +1,8 @@
 package Ada;
 
 import Acciones.Basico;
+import Acciones.Objeto;
 import BaseDeDatos.BD;
-import Objetos.Objeto;
 
 public class AdaLovelace extends Objeto {
 

@@ -1,4 +1,4 @@
-package Objetos;
+package Acciones;
 
 public class Objeto {
 	public Objeto siguiente;

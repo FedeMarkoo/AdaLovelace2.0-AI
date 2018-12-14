@@ -5,18 +5,23 @@
 
 <hibernate-mapping>
 
-	<class name="BaseDeDatos.MapeoAcciones" table="accion">
+	<class name="BaseDeDatos.MapeoAcciones" table="Accion">
 		<id column="objeto" name="objeto" type="string" />
 		<property column="accion" name="accion" type="string" />
 	</class>
 	
-	<class name="BaseDeDatos.MapeoObjetos" table="objeto">
+	<class name="BaseDeDatos.MapeoObjetos" table="Objeto">
 		<id column="objeto" name="objeto" type="string" />
 		<property column="cantidadDeLlamados" name="cantidadDeLlamados" type="int" />
 	</class>
 		
-	<class name="BaseDeDatos.MapeoDiccionario" table="diccionario">
+	<class name="BaseDeDatos.MapeoDiccionario" table="Diccionario">
 		<id column="palabra" name="palabra" type="string" />
+		<property column="tipo" name="tipo" type="string" />
+	</class>
+	
+	<class name="BaseDeDatos.MapeoTipoDeDato" table="TipoDato">
+		<id column="atributo" name="atributo" type="string" />
 		<property column="tipo" name="tipo" type="string" />
 	</class>
 	
