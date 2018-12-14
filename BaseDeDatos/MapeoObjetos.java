@@ -1,13 +1,20 @@
 package BaseDeDatos;
 
 public class MapeoObjetos {
-	
+
 	private String objeto;
 	private String sinonimo;
 	private int cantidadDeLlamados;
 
-	public MapeoObjetos() {}
-	
+	public MapeoObjetos() {
+	}
+
+	public MapeoObjetos(String objeto, int cant, String sinonimo) {
+		this.objeto = objeto;
+		cantidadDeLlamados = cant;
+		this.sinonimo = sinonimo;
+	}
+
 	public String getObjeto() {
 		return objeto;
 	}

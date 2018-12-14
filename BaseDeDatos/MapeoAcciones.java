@@ -1,12 +1,18 @@
 package BaseDeDatos;
 
 public class MapeoAcciones {
-	
+
 	private String sinonimo;
 	private String accion;
 
-	public MapeoAcciones() {}
-	
+	public MapeoAcciones() {
+	}
+
+	public MapeoAcciones(String accion, String sinonimo) {
+		this.accion = accion;
+		this.sinonimo = sinonimo;
+	}
+
 	public String getAccion() {
 		return accion;
 	}

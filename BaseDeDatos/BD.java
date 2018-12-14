@@ -72,7 +72,6 @@ public class BD {
 		return null;
 	}
 
-
 	public static String getSinonimoObjeto(String cad) {
 		try {
 			@SuppressWarnings("deprecation")
@@ -88,6 +87,36 @@ public class BD {
 		Transaction tx = session.beginTransaction();
 		try {
 			MapeoDiccionario res = new MapeoDiccionario(palabra.toLowerCase(), tipo);
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean cargarSinonimoSustantivo(String objeto, String sinonimo) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoObjetos res = new MapeoObjetos(objeto.toLowerCase(), 1, sinonimo);
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean cargarSinonimoVerbo(String accion, String sinonimo) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoAcciones res = new MapeoAcciones(accion.toLowerCase(), sinonimo);
 			session.save(res);
 			tx.commit();
 			return true;

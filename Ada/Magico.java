@@ -1,5 +1,6 @@
 package Ada;
 
+import BaseDeDatos.BD;
 import Objetos.Objeto;
 
 public class Magico {
@@ -29,20 +30,39 @@ public class Magico {
 	private static String noReconoceElSustantivo(String clase) {
 		Basico.decir(
 				"No entiendo lo que me estas pidiendo... \n" + clase + " es un sinomimo de un objeto ya registrado?");
-				return null;
+		if (Basico.escuchar().contains("si")) {
+			Basico.decir("Decime cual es su sinonimo");
+			if (BD.cargarSinonimoSustantivo(clase, Basico.escuchar()))
+				Basico.decir("Carga realiada con exito");
+			else
+				Basico.decir("No fue posible realizar la carga");
+		} else {
+			Basico.decir("Desea agregar el codigo?");
+			if (Basico.escuchar().toLowerCase().contains("si")) {
+				Basico.decir("Ingreselo");
+				String codigo = Basico.escuchar();
+				escribirClase(clase, codigo);
+				return "Carga de codigo realizada con exito";
+			}
+		}
+		return "No tengo ni idea que hacer";
 	}
 
 	public static String noReconoceElVerbo(String verbo) {
 		Basico.decir(
 				"No entiendo lo que me estas pidiendo... \n" + verbo + " es un sinomimo de una accion ya registrada?");
 		if (Basico.escuchar().contains("si")) {
-
+			Basico.decir("Decime cual es su sinonimo");
+			if (BD.cargarSinonimoSustantivo(verbo, Basico.escuchar()))
+				Basico.decir("Carga realiada con exito");
+			else
+				Basico.decir("No fue posible realizar la carga");
 		} else {
 			Basico.decir("Desea agregar el codigo?");
 			if (Basico.escuchar().toLowerCase().contains("si")) {
 				Basico.decir("Ingreselo");
 				String codigo = Basico.escuchar();
-				escribirMetodo(codigo);
+				escribirMetodo(verbo, codigo);
 				return "Carga de codigo realizada con exito";
 			}
 
@@ -50,7 +70,7 @@ public class Magico {
 		return "No tengo ni idea que hacer";
 	}
 
-	private static void escribirMetodo(String codigo) {
+	private static void escribirMetodo(String verbo, String codigo) {
 
 		/**
 		 * bardo para despues.... pero la onda seria que tome el nombre del objeto al
@@ -66,7 +86,7 @@ public class Magico {
 
 	}
 
-	private static void escribirClase(String codigo) {
+	private static void escribirClase(String clase, String codigo) {
 
 		/**
 		 * bardo para despues.... pero la onda seria que tome el nombre del objeto al
@@ -81,6 +101,8 @@ public class Magico {
 		 */
 
 		String texto = " package Objetos;		public class Modelo extends Objeto{}";
+		if (texto.length() == 9) {
+		}
 	}
 
 }
