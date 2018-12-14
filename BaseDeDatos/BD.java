@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import Acciones.Basico;
+import Ada.Basico;
 
 public class BD {
 
@@ -26,16 +26,16 @@ public class BD {
 
 		for (String cad : texto.split(" ")) {
 
-			String busqueda = buscar(cad, MapeoDiccionario.class);
+			String busqueda = getTipo(cad);
 
 			if (busqueda == null) {
 				Basico.decir("No identifico que tipo de palabra es " + cad
 						+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
 				ingresarTipo(cad, Basico.escuchar());
-				busqueda = buscar(cad, MapeoDiccionario.class);
+				busqueda = getTipo(cad);
 			}
 
-			if (busqueda != null)
+			if (!(busqueda != null && !busqueda.equals("ignorar")))
 				switch (busqueda) {
 				case "verbo":
 					verbo = cad;
@@ -51,21 +51,37 @@ public class BD {
 		return new String[] { sustantivo, verbo, adjetivo };
 	}
 
-	@SuppressWarnings("all")
-	public static String buscar(String texto, Class clase) {
+	public static String getTipo(String cad) {
 		try {
-			Criteria cb = session.createCriteria(clase).add(Restrictions.eq("palabra", texto));
-			if (cb != null && cb.list() != null && !cb.list().isEmpty()) {
-				if (MapeoAcciones.class == clase)
-					return ((MapeoAcciones) cb.uniqueResult()).getAccion();
-				if (MapeoDiccionario.class == clase)
-					return ((MapeoDiccionario) cb.uniqueResult()).getTipo();
-			}
+			@SuppressWarnings("deprecation")
+			Criteria cb = session.createCriteria(MapeoDiccionario.class).add(Restrictions.eq("palabra", cad));
+			return ((MapeoDiccionario) cb.uniqueResult()).getTipo();
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return null;
+	}
 
+	public static String getSinonimoVerbo(String cad) {
+		try {
+			@SuppressWarnings("deprecation")
+			Criteria cb = session.createCriteria(MapeoAcciones.class).add(Restrictions.eq("accion", cad));
+			String sinonimo = ((MapeoAcciones) cb.uniqueResult()).getSinonimo();
+			return sinonimo.length() == 0 ? cad : getSinonimoVerbo(sinonimo);
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+
+	public static String getSinonimoObjeto(String cad) {
+		try {
+			@SuppressWarnings("deprecation")
+			Criteria cb = session.createCriteria(MapeoObjetos.class).add(Restrictions.eq("objeto", cad));
+			String sinonimo = ((MapeoObjetos) cb.uniqueResult()).getSinonimo();
+			return sinonimo.length() == 0 ? cad : getSinonimoVerbo(sinonimo);
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 	public static boolean ingresarTipo(String palabra, String tipo) {

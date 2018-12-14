@@ -1,6 +1,6 @@
 package Ada;
 
-import Acciones.Basico;
+import Objetos.Objeto;
 
 public class Magico {
 
@@ -13,9 +13,9 @@ public class Magico {
 
 			act = Class.forName("Acciones." + clase);
 		} catch (Exception e) {
-			return noReconoceElVerbo(clase);
+			return noReconoceElSustantivo(clase);
 		}
-		
+
 		try {
 			String retorno = (String) act.getMethod(verbo).invoke(deco);
 			return retorno;
@@ -26,8 +26,15 @@ public class Magico {
 
 	}
 
+	private static String noReconoceElSustantivo(String clase) {
+		Basico.decir(
+				"No entiendo lo que me estas pidiendo... \n" + clase + " es un sinomimo de un objeto ya registrado?");
+				return null;
+	}
+
 	public static String noReconoceElVerbo(String verbo) {
-		Basico.decir("No entiendo lo que me estas pidiendo... \nEs un sinomimo de una accion ya registrada?");
+		Basico.decir(
+				"No entiendo lo que me estas pidiendo... \n" + verbo + " es un sinomimo de una accion ya registrada?");
 		if (Basico.escuchar().contains("si")) {
 
 		} else {
@@ -57,6 +64,23 @@ public class Magico {
 		 * atributo se debe reemplazar la primer llave
 		 */
 
+	}
+
+	private static void escribirClase(String codigo) {
+
+		/**
+		 * bardo para despues.... pero la onda seria que tome el nombre del objeto al
+		 * que pertenece la accion y se fije si existe el archivo, si existe se agrega
+		 * el metodo con el nombre de la accion y su codigo si no existe algo salio
+		 * mal... ya que de no existir la clase, esta se debe crear en una instancia
+		 * anterior, la cual es cuando se reconoce el objeto y de no existir se le
+		 * establecen sus propiedades
+		 * 
+		 * para agregar un metodo se debe reemplazar la ultima llave y para agregar un
+		 * atributo se debe reemplazar la primer llave
+		 */
+
+		String texto = " package Objetos;		public class Modelo extends Objeto{}";
 	}
 
 }

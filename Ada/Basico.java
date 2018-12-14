@@ -1,4 +1,4 @@
-package Acciones;
+package Ada;
 
 import testeo.MainV;
 
@@ -13,14 +13,14 @@ public class Basico {
 	}
 
 	public static String escuchar() {
-		while (!MainV.escucha.getText().contains(".")) 
+		while (!MainV.escucha.getText().contains("."))
 			try {
 				Thread.sleep(500);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		
-		String a=MainV.escucha.getText().replace(".", "");
+
+		String a = MainV.escucha.getText().replace(".", "");
 		MainV.escucha.setText("");
 		return a.trim();
 	}

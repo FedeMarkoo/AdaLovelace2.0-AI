@@ -11,8 +11,6 @@ public class MapeoDiccionario {
 	}
 
 	public MapeoDiccionario() {
-		this.palabra = palabra;
-		this.tipo = tipo;
 	}
 
 	public String getTipo() {

@@ -3,6 +3,7 @@ package BaseDeDatos;
 public class MapeoObjetos {
 	
 	private String objeto;
+	private String sinonimo;
 	private int cantidadDeLlamados;
 
 	public MapeoObjetos() {}
@@ -21,6 +22,14 @@ public class MapeoObjetos {
 
 	public void setCantidadDeLlamados(int cantidadDeLlamados) {
 		this.cantidadDeLlamados = cantidadDeLlamados;
+	}
+
+	public String getSinonimo() {
+		return sinonimo;
+	}
+
+	public void setSinonimo(String sinonimo) {
+		this.sinonimo = sinonimo;
 	}
 
 }
