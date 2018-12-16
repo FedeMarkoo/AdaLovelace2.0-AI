@@ -7,7 +7,7 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import Ada.Basico;
+import Ada.AdaLovelace;
 
 public class BD {
 
@@ -29,9 +29,9 @@ public class BD {
 			String busqueda = getTipo(cad);
 
 			if (busqueda == null) {
-				Basico.decir("No identifico que tipo de palabra es " + cad
+				AdaLovelace.decir("No identifico que tipo de palabra es " + cad
 						+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
-				ingresarTipo(cad, Basico.escuchar());
+				ingresarTipo(cad, AdaLovelace.escuchar());
 				busqueda = getTipo(cad);
 			}
 
@@ -127,4 +127,45 @@ public class BD {
 			return false;
 		}
 	}
+
+	public static boolean crearMetodo(String accion) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoAcciones res = new MapeoAcciones(accion.toLowerCase(), "");
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean crearClase(String clase) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoObjetos res = new MapeoObjetos(clase.toLowerCase(), 1, "");
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static String getTipoDato(String atributo) {
+		try {
+			@SuppressWarnings("deprecation")
+			Criteria cb = session.createCriteria(MapeoTipoDeDato.class).add(Restrictions.eq("atributo", atributo));
+			return((MapeoTipoDeDato) cb.uniqueResult()).getTipo();
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
 }
