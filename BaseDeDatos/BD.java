@@ -22,7 +22,7 @@ public class BD {
 			session = factory.openSession();
 		}
 
-		String verbo = "", adjetivo = "", sustantivo = "";
+		String verbo = "", adjetivo = "", sustantivo = "yo";
 
 		for (String cad : texto.split(" ")) {
 
@@ -35,7 +35,7 @@ public class BD {
 				busqueda = getTipo(cad);
 			}
 
-			if (!(busqueda != null && !busqueda.equals("ignorar")))
+			if (busqueda != null)
 				switch (busqueda) {
 				case "verbo":
 					verbo = cad;
@@ -48,7 +48,7 @@ public class BD {
 					break;
 				}
 		}
-		return new String[] { sustantivo, verbo, adjetivo };
+		return new String[] { capitalizar(sustantivo), verbo, adjetivo };
 	}
 
 	public static String getTipo(String cad) {
@@ -162,10 +162,14 @@ public class BD {
 		try {
 			@SuppressWarnings("deprecation")
 			Criteria cb = session.createCriteria(MapeoTipoDeDato.class).add(Restrictions.eq("atributo", atributo));
-			return((MapeoTipoDeDato) cb.uniqueResult()).getTipo();
+			return ((MapeoTipoDeDato) cb.uniqueResult()).getTipo();
 		} catch (Exception e) {
 		}
 		return null;
+	}
+
+	public static String capitalizar(String clase) {
+		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
 	}
 
 }

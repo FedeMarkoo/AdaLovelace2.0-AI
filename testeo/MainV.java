@@ -74,7 +74,7 @@ public class MainV {
 
 		new Thread() {
 			public void run() {
-				new AdaLovelace();
+				new AdaLovelace().iniciar();
 			}
 		}.start();
 	}

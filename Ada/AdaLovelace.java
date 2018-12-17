@@ -1,14 +1,11 @@
 package Ada;
 
-import BaseDeDatos.BD;
-import Objetos.Objeto;
-
-public class AdaLovelace extends Objeto {
+public class AdaLovelace {
 
 	private Thread heart = new Thread() {
 		public void run() {
 			while (true)
-				responder(escuchar());
+				Basico.decir(responder(escuchar()));
 		}
 	};
 
@@ -16,7 +13,6 @@ public class AdaLovelace extends Objeto {
 
 	}
 
-	
 	public static void decir(String texto) {
 		Basico.decir(texto);
 	}
@@ -28,7 +24,7 @@ public class AdaLovelace extends Objeto {
 	public static String escuchar() {
 		return Basico.escuchar();
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public boolean detener() {
 		heart.interrupt();
@@ -42,7 +38,7 @@ public class AdaLovelace extends Objeto {
 	}
 
 	private String responder(String texto) {
-		return Magico.magia(BD.decodificar(texto), texto);
+		return Magico.ejecutar(texto);
 	}
 
 }

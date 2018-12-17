@@ -5,7 +5,7 @@ import testeo.MainV;
 public class Basico {
 
 	public static void decir(String texto) {
-		MainV.dice.append(texto);
+		MainV.dice.append("\n"+texto);
 	}
 
 	public static void caminar(int x, int y) {
