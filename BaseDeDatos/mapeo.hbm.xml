@@ -26,4 +26,9 @@
 		<property column="tipo" name="tipo" type="string" />
 	</class>
 
+	<class name="BaseDeDatos.MapeoFrases" table="Frases">
+		<id column="frase" name="frase" type="string" />
+		<property column="verbo" name="verbo" type="string" />
+	</class>
+
 </hibernate-mapping> 

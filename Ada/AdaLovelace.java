@@ -1,16 +1,21 @@
 package Ada;
 
+import BaseDeDatos.BD;
+
 public class AdaLovelace {
 
 	private Thread heart = new Thread() {
 		public void run() {
-			while (true)
-				Basico.decir(responder(escuchar()));
+			while (true) {
+				String escuchar = escuchar();
+				if (escuchar.trim().length() != 0)
+					Basico.decir(responder(escuchar));
+			}
 		}
 	};
 
 	public AdaLovelace() {
-
+		BD.conectarBD();
 	}
 
 	public static void decir(String texto) {

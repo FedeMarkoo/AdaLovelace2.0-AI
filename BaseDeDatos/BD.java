@@ -5,23 +5,28 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.SimpleExpression;
 
 import Ada.AdaLovelace;
 
 public class BD {
 
 	private static SessionFactory factory;
-	protected static Session session;
+	private static Session session;
 
 	public static String[] decodificar(String texto) {
-		if (session == null) {
-			Configuration conf = new Configuration();
-			conf.configure("BaseDeDatos/hibernate.cfg.xml");
-			factory = conf.buildSessionFactory();
-			session = factory.openSession();
-		}
+		String frase = decodificarPorFrase(texto);
+		String[] deco = decodificarPorVerbo(texto);
 
+		if (frase.length() != 0) {
+			deco[1] = frase;
+		}
+		return deco;
+	}
+
+	private static String[] decodificarPorVerbo(String texto) {
 		String verbo = "", adjetivo = "", sustantivo = "yo";
 
 		for (String cad : texto.split(" ")) {
@@ -38,17 +43,31 @@ public class BD {
 			if (busqueda != null)
 				switch (busqueda) {
 				case "verbo":
-					verbo = cad;
+					verbo = getSinonimoVerbo(cad);
 					break;
 				case "adjetivo":
 					adjetivo = cad;
 					break;
 				case "sustantivo":
-					sustantivo = cad;
+					sustantivo = getSinonimoObjeto(cad);
 					break;
 				}
 		}
 		return new String[] { capitalizar(sustantivo), verbo, adjetivo };
+	}
+
+	@SuppressWarnings("deprecation")
+	private static String decodificarPorFrase(String texto) {
+		texto = texto.replace(" ", "%");
+		try {
+			SimpleExpression like = Restrictions.like("frase", texto, MatchMode.ANYWHERE);
+			Criteria createCriteria = session.createCriteria(MapeoFrases.class);
+			Criteria c = createCriteria.add(like);
+			return ((MapeoFrases) c.uniqueResult()).getVerbo();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 
 	public static String getTipo(String cad) {
@@ -66,10 +85,10 @@ public class BD {
 			@SuppressWarnings("deprecation")
 			Criteria cb = session.createCriteria(MapeoAcciones.class).add(Restrictions.eq("accion", cad));
 			String sinonimo = ((MapeoAcciones) cb.uniqueResult()).getSinonimo();
-			return sinonimo.length() == 0 ? cad : getSinonimoVerbo(sinonimo);
+			return getSinonimoVerbo(sinonimo);
 		} catch (Exception e) {
 		}
-		return null;
+		return cad;
 	}
 
 	public static String getSinonimoObjeto(String cad) {
@@ -77,10 +96,10 @@ public class BD {
 			@SuppressWarnings("deprecation")
 			Criteria cb = session.createCriteria(MapeoObjetos.class).add(Restrictions.eq("objeto", cad));
 			String sinonimo = ((MapeoObjetos) cb.uniqueResult()).getSinonimo();
-			return sinonimo.length() == 0 ? cad : getSinonimoVerbo(sinonimo);
+			return getSinonimoObjeto(sinonimo);
 		} catch (Exception e) {
 		}
-		return null;
+		return cad;
 	}
 
 	public static boolean ingresarTipo(String palabra, String tipo) {
@@ -170,6 +189,13 @@ public class BD {
 
 	public static String capitalizar(String clase) {
 		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
+	}
+
+	public static void conectarBD() {
+		Configuration conf = new Configuration();
+		conf.configure("BaseDeDatos/hibernate.cfg.xml");
+		factory = conf.buildSessionFactory();
+		session = factory.openSession();
 	}
 
 }

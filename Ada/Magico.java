@@ -3,6 +3,7 @@ package Ada;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.reflect.Method;
 import java.util.Scanner;
 
 import BaseDeDatos.BD;
@@ -26,7 +27,8 @@ public class Magico {
 			return noReconoceElSustantivo(clase);
 		}
 		try {
-			String retorno = (String) act.getMethod(metodo).invoke(parametro);
+			Method method = act.getMethod(metodo, String.class);
+			String retorno = (String) method.invoke(1,parametro);
 			return retorno;
 		} catch (Exception e) {
 			return noReconoceElVerbo(clase, metodo);
@@ -53,7 +55,7 @@ public class Magico {
 				"No entiendo lo que me estas pidiendo... \n" + verbo + " es un sinomimo de una accion ya registrada?");
 		if (AdaLovelace.escuchar().contains("si")) {
 			AdaLovelace.decir("Decime cual es su sinonimo");
-			if (BD.cargarSinonimoSustantivo(verbo, AdaLovelace.escuchar()))
+			if (BD.cargarSinonimoVerbo(verbo, AdaLovelace.escuchar()))
 				AdaLovelace.decir("Carga realiada con exito");
 			else
 				AdaLovelace.decir("No fue posible realizar la carga");
