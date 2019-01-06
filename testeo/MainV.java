@@ -1,45 +1,27 @@
 package testeo;
 
-import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 import javax.swing.JFrame;
-import java.awt.GridBagLayout;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import Ada.AdaLovelace;
 
-import java.awt.GridBagConstraints;
-import javax.swing.JTextArea;
-import java.awt.Insets;
-
 public class MainV {
 
-	private JFrame frame;
+	public JFrame frame;
 	public static JTextField escucha;
 	public static JTextArea dice;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainV window = new MainV();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-
-	}
 
 	/**
 	 * Create the application.
 	 */
 	public MainV() {
 		initialize();
+		frame.setVisible(true);
 	}
 
 	/**

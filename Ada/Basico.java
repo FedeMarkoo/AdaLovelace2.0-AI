@@ -6,6 +6,7 @@ import testeo.MainV;
 public class Basico {
 
 	public static void decir(String texto) {
+		MainV.dice.append("\n"+texto);
 		Voz.speak(texto);
 	}
 
@@ -21,8 +22,9 @@ public class Basico {
 				e.printStackTrace();
 			}
 
-		String a = MainV.escucha.getText().replace(".", "");
+		String a = MainV.escucha.getText().replace(".", "").trim();
 		MainV.escucha.setText("");
-		return a.trim();
+		MainV.dice.append("\n"+a);
+		return a;
 	}
 }

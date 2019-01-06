@@ -1,5 +1,6 @@
 package Ada.voz;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.speech.Central;
@@ -8,11 +9,30 @@ import javax.speech.synthesis.SynthesizerModeDesc;
 import javax.speech.synthesis.Voice;
 
 public class Voz {
-	String speaktext;
+
+	private static ArrayList<String> lista = new ArrayList<>();
+	private static Thread hilo = new Thread() {
+		public void run() {
+			while (true) {
+				while (lista.isEmpty())
+					try {
+						sleep(200);
+					} catch (Exception e) {
+					}
+				decir(lista.remove(0));
+			}
+		}
+	};
 
 	public static void speak(String texto) {
+		if (!hilo.isAlive())
+			hilo.start();
+		lista.add(texto);
+	}
+
+	private static void decir(String texto) {
 		try {
-			Runtime.getRuntime().exec("espeak -ves-la \"" + texto+"\"");
+//			Runtime.getRuntime().exec("espeak -ves-la \"" + texto + "\"").waitFor();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

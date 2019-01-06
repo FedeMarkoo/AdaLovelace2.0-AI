@@ -1,8 +1,23 @@
 package Ada;
 
+import java.awt.EventQueue;
+
 import BaseDeDatos.BD;
+import testeo.MainV;
 
 public class AdaLovelace {
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					new MainV();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	private Thread heart = new Thread() {
 		public void run() {
