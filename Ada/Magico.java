@@ -104,13 +104,15 @@ public class Magico {
 
 	public static boolean agregarMetodo(String clase, String metodo, String codigo) {
 		String texto = leerClase(clase);
+		if(metodo.trim().length() > 1)
+			return true;
 		texto = texto.substring(0, texto.lastIndexOf("}"));
 		if (!codigo.contains("return"))
 			if (codigo.length() < 4)
 				codigo += "return \"Pendiente de implementacion\";";
 			else
 				codigo += "return \"faltante de return\";";
-		texto += "\tpublic static String " + metodo + "(){\n" + codigo + "\n}\n}";
+		texto += "\tpublic static String " + metodo + "(String mesaje){\n" + codigo + "\n}\n}";
 
 		return escribirArchivo(clase, texto);// && BD.crearMetodo(metodo);
 	}
