@@ -1,11 +1,12 @@
 package Ada;
 
+import Ada.voz.Voz;
 import testeo.MainV;
 
 public class Basico {
 
 	public static void decir(String texto) {
-		MainV.dice.append("\n"+texto);
+		Voz.speak(texto);
 	}
 
 	public static void caminar(int x, int y) {
