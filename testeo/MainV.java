@@ -57,7 +57,6 @@ public class MainV {
 		frame.getContentPane().setLayout(gridBagLayout);
 
 		dice = new JTextArea();
-		dice.setEnabled(false);
 		dice.setEditable(false);
 		GridBagConstraints gbc_textArea = new GridBagConstraints();
 		gbc_textArea.insets = new Insets(0, 0, 5, 0);
@@ -73,7 +72,7 @@ public class MainV {
 		gbc_textField.gridy = 1;
 		frame.getContentPane().add(escucha, gbc_textField);
 		escucha.setColumns(10);
-
+		
 		new Thread() {
 			public void run() {
 				new AdaLovelace().iniciar();

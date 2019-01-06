@@ -24,5 +24,7 @@
 	<classpathentry kind="lib" path="libs/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-simple-1.7.7.jar"/>
 	<classpathentry kind="lib" path="libs/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/voicerss_tts.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Fede/Escritorio/Proyectos/AdaLovelace2.0-AI/freetts-1.2.2.jar" sourcepath="freetts-1.2.2.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
