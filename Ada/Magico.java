@@ -22,7 +22,7 @@ public class Magico {
 	public static String ejecutar(String clase, String metodo, String parametro) {
 		Class<?> act;
 		try {
-			act = Class.forName("Objetos." + clase);
+			act = Class.forName("Objetos." + capitalizar(clase));
 		} catch (Exception e) {
 			return noReconoceElSustantivo(clase);
 		}
@@ -35,6 +35,10 @@ public class Magico {
 		}
 	}
 
+	public static String capitalizar(String clase) {
+		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
+	}
+	
 	private static String noReconoceElSustantivo(String clase) {
 		AdaLovelace.decir(
 				"No entiendo lo que me estas pidiendo... \n" + clase + " es un sinomimo de un objeto ya registrado?");

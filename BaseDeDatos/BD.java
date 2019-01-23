@@ -1,5 +1,11 @@
 package BaseDeDatos;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,6 +14,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import java.util.regex.*;
 
 import Ada.AdaLovelace;
 
@@ -17,30 +24,28 @@ public class BD {
 	private static Session session;
 
 	public static String[] decodificar(String texto) {
-		String frase = decodificarPorFrase(texto);
-		String[] deco = decodificarPorVerbo(texto);
-
-		if (frase.length() != 0) {
-			deco[1] = frase;
-		}
+		String[] deco = decodificarPorFrase(texto);
+		if (deco == null)
+			deco = decodificarPorPalabra(texto);
 		return deco;
 	}
 
-	private static String[] decodificarPorVerbo(String texto) {
+	private static String[] decodificarPorPalabra(String texto) {
 		String verbo = "", adjetivo = "", sustantivo = "yo";
 
 		for (String cad : texto.split(" ")) {
 
 			String busqueda = getTipo(cad);
 
-			if (busqueda == null) {
-				AdaLovelace.decir("No identifico que tipo de palabra es " + cad
-						+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
-				ingresarTipo(cad, AdaLovelace.escuchar());
-				busqueda = getTipo(cad);
-			}
+			if (busqueda == null)
+				busqueda = googlearTipo(cad);
+			if (busqueda != null)
+				ingresarTipo(cad, busqueda);
+			else
+				busqueda = ingresarTipo(cad);
 
 			if (busqueda != null)
+				// si aca llega null me rindo....
 				switch (busqueda) {
 				case "verbo":
 					verbo = getSinonimoVerbo(cad);
@@ -56,18 +61,28 @@ public class BD {
 		return new String[] { capitalizar(sustantivo), verbo, adjetivo };
 	}
 
+	private static String ingresarTipo(String cad) {
+		String busqueda;
+		AdaLovelace.decir("No identifico que tipo de palabra es " + cad
+				+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
+		ingresarTipo(cad, AdaLovelace.escuchar());
+		busqueda = getTipo(cad);
+		return busqueda;
+	}
+
 	@SuppressWarnings("deprecation")
-	private static String decodificarPorFrase(String texto) {
+	private static String[] decodificarPorFrase(String texto) {
 		texto = texto.replace(" ", "%");
 		try {
 			SimpleExpression like = Restrictions.like("frase", texto, MatchMode.ANYWHERE);
 			Criteria createCriteria = session.createCriteria(MapeoFrases.class);
 			Criteria c = createCriteria.add(like);
-			return ((MapeoFrases) c.uniqueResult()).getVerbo();
+			MapeoFrases resultado = (MapeoFrases) c.uniqueResult();
+			return new String[] { resultado.getObjeto(), resultado.getVerbo(), null };
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "";
+		return null;
 	}
 
 	public static String getTipo(String cad) {
@@ -196,6 +211,35 @@ public class BD {
 		conf.configure("BaseDeDatos/hibernate.cfg.xml");
 		factory = conf.buildSessionFactory();
 		session = factory.openSession();
+	}
+
+	private static String googlearTipo(String palabra) {
+		HttpURLConnection connection;
+		try {
+			connection = (HttpURLConnection) new URL("https://es.thefreedictionary.com/" + palabra).openConnection();
+			connection.addRequestProperty("User-Agent", "Mozilla/4.76");
+			connection.setConnectTimeout(15000);
+			connection.setReadTimeout(15000);
+			connection.setInstanceFollowRedirects(true);
+			connection.connect();
+			InputStream inputStream = connection.getInputStream();
+			InputStreamReader inputReader = new InputStreamReader(inputStream, "UTF-8");
+			BufferedReader lector = new BufferedReader(inputReader);
+			String linea = "";
+			String temp = "";
+			while ((temp = lector.readLine()) != null)
+				linea += temp;
+
+			Matcher m = Pattern.compile("<h2>" + palabra + ".{0,500}(sustantivo|adjetivo|verbo)").matcher(linea);
+
+			if (m.find())
+				return m.group(1);
+
+			return "ignorar";
+
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }

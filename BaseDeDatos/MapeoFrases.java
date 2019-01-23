@@ -3,6 +3,7 @@ package BaseDeDatos;
 public class MapeoFrases {
 	private String frase;
 	private String verbo;
+	private String objeto;
 
 	public MapeoFrases() {
 
@@ -21,12 +22,20 @@ public class MapeoFrases {
 		this.frase = frase;
 	}
 
+	public void setObjeto(String objeto) {
+		this.objeto = objeto;
+	}
+
 	public String getVerbo() {
 		return verbo;
 	}
 
 	public void setVerbo(String verbo) {
 		this.verbo = verbo;
+	}
+
+	public String getObjeto() {
+		return objeto;
 	}
 
 }
