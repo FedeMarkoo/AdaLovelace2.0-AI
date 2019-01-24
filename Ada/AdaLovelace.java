@@ -2,6 +2,8 @@ package Ada;
 
 import java.awt.EventQueue;
 
+import Ada.Acciones.Basico;
+import Ada.Acciones.Magico;
 import BaseDeDatos.BD;
 import testeo.MainV;
 

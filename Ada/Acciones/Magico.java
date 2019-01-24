@@ -1,4 +1,4 @@
-package Ada;
+package Ada.Acciones;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.lang.reflect.Method;
 import java.util.Scanner;
 
+import Ada.AdaLovelace;
 import BaseDeDatos.BD;
 
 public class Magico {

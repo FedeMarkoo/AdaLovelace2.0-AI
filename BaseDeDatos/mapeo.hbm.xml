@@ -25,6 +25,12 @@
  <class name="BaseDeDatos.MapeoFrases" table="Frases">
   <id column="frase" name="frase" type="string"/>
   <property column="verbo" generated="never" lazy="false" name="verbo" type="string"/>
-  <property column="objeto" name="objeto" type="string"/>
+  <property column="objeto" generated="never" lazy="false" name="objeto" type="string"/>
+ </class>
+ <class name="BaseDeDatos.MapeoSintactico" table="ASintactico">
+  <id/>
+  <property column="palabra" generated="never" lazy="false"
+   name="palabra" type="string"/>
+  <property column="tipo" generated="never" lazy="false" name="tipo" type="string"/>
  </class>
 </hibernate-mapping>

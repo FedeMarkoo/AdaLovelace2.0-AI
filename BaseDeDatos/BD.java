@@ -14,9 +14,12 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+
+import java.util.List;
 import java.util.regex.*;
 
 import Ada.AdaLovelace;
+import Ada.AnalizadorSintactico.AnalizadorSintactico;
 
 public class BD {
 
@@ -35,14 +38,7 @@ public class BD {
 
 		for (String cad : texto.split(" ")) {
 
-			String busqueda = getTipo(cad);
-
-			if (busqueda == null)
-				busqueda = googlearTipo(cad);
-			if (busqueda != null)
-				ingresarTipo(cad, busqueda);
-			else
-				busqueda = ingresarTipo(cad);
+			String busqueda = decodificarTipo(cad);
 
 			if (busqueda != null)
 				// si aca llega null me rindo....
@@ -61,6 +57,18 @@ public class BD {
 		return new String[] { capitalizar(sustantivo), verbo, adjetivo };
 	}
 
+	private static String decodificarTipo(String cad) {
+		String busqueda = getTipo(cad);
+
+		if (busqueda == null)
+			busqueda = googlearTipo(cad);
+		if (busqueda != null)
+			ingresarTipo(cad, busqueda);
+		else
+			busqueda = ingresarTipo(cad);
+		return busqueda;
+	}
+
 	private static String ingresarTipo(String cad) {
 		String busqueda;
 		AdaLovelace.decir("No identifico que tipo de palabra es " + cad
@@ -72,17 +80,7 @@ public class BD {
 
 	@SuppressWarnings("deprecation")
 	private static String[] decodificarPorFrase(String texto) {
-		texto = texto.replace(" ", "%");
-		try {
-			SimpleExpression like = Restrictions.like("frase", texto, MatchMode.ANYWHERE);
-			Criteria createCriteria = session.createCriteria(MapeoFrases.class);
-			Criteria c = createCriteria.add(like);
-			MapeoFrases resultado = (MapeoFrases) c.uniqueResult();
-			return new String[] { resultado.getObjeto(), resultado.getVerbo(), null };
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return AnalizadorSintactico.analizar(texto);
 	}
 
 	public static String getTipo(String cad) {
@@ -91,8 +89,8 @@ public class BD {
 			Criteria cb = session.createCriteria(MapeoDiccionario.class).add(Restrictions.eq("palabra", cad));
 			return ((MapeoDiccionario) cb.uniqueResult()).getTipo();
 		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 
 	public static String getSinonimoVerbo(String cad) {
@@ -102,8 +100,8 @@ public class BD {
 			String sinonimo = ((MapeoAcciones) cb.uniqueResult()).getSinonimo();
 			return getSinonimoVerbo(sinonimo);
 		} catch (Exception e) {
+			return cad;
 		}
-		return cad;
 	}
 
 	public static String getSinonimoObjeto(String cad) {
@@ -113,8 +111,8 @@ public class BD {
 			String sinonimo = ((MapeoObjetos) cb.uniqueResult()).getSinonimo();
 			return getSinonimoObjeto(sinonimo);
 		} catch (Exception e) {
+			return cad;
 		}
-		return cad;
 	}
 
 	public static boolean ingresarTipo(String palabra, String tipo) {
@@ -237,6 +235,26 @@ public class BD {
 
 			return "ignorar";
 
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("all")
+	public String[] tipoSintactico(String palabra) {
+		try {
+			Criteria cb = session.createCriteria(MapeoSintactico.class).add(Restrictions.eq("palabra", palabra));
+			List<MapeoSintactico> temp = cb.list();
+
+			if (temp.isEmpty()) {
+				decodificarTipo(palabra);
+				return tipoSintactico(palabra);
+			}
+
+			String[] retorno = new String[temp.size()];
+			while (!temp.isEmpty())
+				retorno[temp.size() - 1] = temp.remove(0).getTipo();
+			return retorno;
 		} catch (Exception e) {
 			return null;
 		}
