@@ -33,4 +33,9 @@
    name="palabra" type="string"/>
   <property column="tipo" generated="never" lazy="false" name="tipo" type="string"/>
  </class>
+ <class name="BaseDeDatos.MapeoCombinacionesSintactico" table="CSintactico">
+  <id/>
+  <property column="combo" generated="never" lazy="false"
+   name="combo" type="string"/>
+ </class>
 </hibernate-mapping>

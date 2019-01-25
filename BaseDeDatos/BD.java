@@ -5,18 +5,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.SimpleExpression;
-
-import java.util.List;
-import java.util.regex.*;
 
 import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.AnalizadorSintactico;
@@ -78,7 +76,6 @@ public class BD {
 		return busqueda;
 	}
 
-	@SuppressWarnings("deprecation")
 	private static String[] decodificarPorFrase(String texto) {
 		return AnalizadorSintactico.analizar(texto);
 	}
@@ -241,7 +238,7 @@ public class BD {
 	}
 
 	@SuppressWarnings("all")
-	public String[] tipoSintactico(String palabra) {
+	public static String[] tipoSintactico(String palabra) {
 		try {
 			Criteria cb = session.createCriteria(MapeoSintactico.class).add(Restrictions.eq("palabra", palabra));
 			List<MapeoSintactico> temp = cb.list();
@@ -259,5 +256,15 @@ public class BD {
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("all")
+	public static List<String> getCombinacionesSintactico() {
+		try {
+			Criteria cb = session.createCriteria(MapeoTipoDeDato.class);
+			return cb.list();
+		} catch (Exception e) {
+			return null;
+		}
+	}	
 
 }
