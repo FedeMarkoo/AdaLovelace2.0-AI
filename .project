@@ -16,12 +16,21 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1544733611092</id>
+			<id>1548382457465</id>
 			<name></name>
 			<type>6</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-*.ini</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1548382457544</id>
+			<name></name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-desktop.ini</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
