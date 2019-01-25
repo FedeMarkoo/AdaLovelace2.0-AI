@@ -23,4 +23,9 @@ public class Palabra {
 	public boolean isAdverbio() {
 		return tipos.size() == 1 && tipos.contains("adverbio");
 	}
+
+	public boolean isSigno() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -18,41 +18,16 @@ import org.hibernate.criterion.Restrictions;
 
 import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.AnalizadorSintactico;
+import Ada.AnalizadorSintactico.Tipo;
 
 public class BD {
 
 	private static SessionFactory factory;
 	private static Session session;
 
-	public static String[] decodificar(String texto) {
-		String[] deco = decodificarPorFrase(texto);
-		if (deco == null)
-			deco = decodificarPorPalabra(texto);
+	public static Tipo decodificar(String texto) {
+		Tipo deco = decodificarPorFrase(texto);
 		return deco;
-	}
-
-	private static String[] decodificarPorPalabra(String texto) {
-		String verbo = "", adjetivo = "", sustantivo = "yo";
-
-		for (String cad : texto.split(" ")) {
-
-			String busqueda = decodificarTipo(cad);
-
-			if (busqueda != null)
-				// si aca llega null me rindo....
-				switch (busqueda) {
-				case "verbo":
-					verbo = getSinonimoVerbo(cad);
-					break;
-				case "adjetivo":
-					adjetivo = cad;
-					break;
-				case "sustantivo":
-					sustantivo = getSinonimoObjeto(cad);
-					break;
-				}
-		}
-		return new String[] { capitalizar(sustantivo), verbo, adjetivo };
 	}
 
 	private static String decodificarTipo(String cad) {
@@ -76,7 +51,7 @@ public class BD {
 		return busqueda;
 	}
 
-	private static String[] decodificarPorFrase(String texto) {
+	private static Tipo decodificarPorFrase(String texto) {
 		return AnalizadorSintactico.analizar(texto);
 	}
 

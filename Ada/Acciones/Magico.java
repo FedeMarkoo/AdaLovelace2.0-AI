@@ -7,23 +7,22 @@ import java.lang.reflect.Method;
 import java.util.Scanner;
 
 import Ada.AdaLovelace;
+import Ada.AnalizadorSintactico.Tipo;
 import BaseDeDatos.BD;
 
 public class Magico {
 
 	public static String ejecutar(String mensaje) {
-		String[] deco = BD.decodificar(mensaje.toLowerCase());
-		return ejecutar(deco[0], deco[1], mensaje);
+		Tipo deco = BD.decodificar(mensaje.toLowerCase());
+		return ejecutar(deco, mensaje);
 	}
 
-	public static String ejecutar(String clase, String metodo) {
-		return ejecutar(clase, metodo, "");
-	}
-
-	public static String ejecutar(String clase, String metodo, String parametro) {
+	public static String ejecutar(Tipo juego, String parametro) {
+		String clase = capitalizar(juego.clase());
+		String metodo = juego.metodo();
 		Class<?> act;
 		try {
-			act = Class.forName("Objetos." + capitalizar(clase));
+			act = Class.forName("Objetos." + clase);
 		} catch (Exception e) {
 			return noReconoceElSustantivo(clase);
 		}

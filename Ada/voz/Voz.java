@@ -1,12 +1,6 @@
 package Ada.voz;
 
 import java.util.ArrayList;
-import java.util.Locale;
-
-import javax.sound.midi.MidiDevice;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Synthesizer;
 
 public class Voz {
 
