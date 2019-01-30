@@ -10,7 +10,6 @@ public class AnalizadorSintactico {
 
 	private static ArrayList<String> cargarCombinaciones() {
 		ArrayList<String> combo = new ArrayList<>();
-		combo.add("verbo");
 		combo.addAll(BD.getCombinacionesSintactico());
 		return combo;
 	}
