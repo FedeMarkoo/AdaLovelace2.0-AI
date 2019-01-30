@@ -5,6 +5,11 @@ public class MapeoSintactico {
 	private String palabra;
 	private String tipo;
 
+	public MapeoSintactico(String palabra, String tipo) {
+		this.palabra = palabra;
+		this.tipo = tipo;
+	}
+
 	public String getPalabra() {
 		return palabra;
 	}

@@ -26,7 +26,10 @@ public class Tipo {
 			if (!palabra.match(tipo))
 				if (palabra.isAdverbio() || palabra.isSigno())
 					desface++;
-				else {
+				else if (tipo.contains("?")) {
+					desface--;
+					indice++;
+				} else {
 					match = false;
 					return;
 				}

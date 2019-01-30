@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 
 import Ada.Acciones.Basico;
 import Ada.Acciones.Magico;
-import BaseDeDatos.BD;
 import testeo.MainV;
 
 public class AdaLovelace {
@@ -30,10 +29,6 @@ public class AdaLovelace {
 			}
 		}
 	};
-
-	public AdaLovelace() {
-		BD.conectarBD();
-	}
 
 	public static void decir(String texto) {
 		Basico.decir(texto);

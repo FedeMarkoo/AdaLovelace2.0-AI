@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,40 +17,48 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 
-import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.AnalizadorSintactico;
+import Ada.AnalizadorSintactico.Palabra;
 import Ada.AnalizadorSintactico.Tipo;
 
 public class BD {
 
 	private static SessionFactory factory;
-	private static Session session;
+	private static Session session = conectar();
+	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*(\\w+)\\s*<\\/i>");
+
+	private static Session conectar() {
+		Configuration conf = new Configuration();
+		conf.configure("BaseDeDatos/hibernate.cfg.xml");
+		factory = conf.buildSessionFactory();
+		return factory.openSession();
+	}
 
 	public static Tipo decodificar(String texto) {
 		Tipo deco = decodificarPorFrase(texto);
 		return deco;
 	}
 
-	private static String decodificarTipo(String cad) {
-		String busqueda = getTipo(cad);
+//	private static String decodificarTipo(String cad) {
+//		String busqueda = getTipo(cad);
+//
+//		if (busqueda == null)
+//			busqueda = googlearTipo(cad);
+//		if (busqueda != null)
+//			ingresarTipo(busqueda);
+//		else
+//			busqueda = ingresarTipo(cad);
+//		return busqueda;
+//	}
 
-		if (busqueda == null)
-			busqueda = googlearTipo(cad);
-		if (busqueda != null)
-			ingresarTipo(cad, busqueda);
-		else
-			busqueda = ingresarTipo(cad);
-		return busqueda;
-	}
-
-	private static String ingresarTipo(String cad) {
-		String busqueda;
-		AdaLovelace.decir("No identifico que tipo de palabra es " + cad
-				+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
-		ingresarTipo(cad, AdaLovelace.escuchar());
-		busqueda = getTipo(cad);
-		return busqueda;
-	}
+//	private static String ingresarTipo(String cad) {
+//		String busqueda;
+//		AdaLovelace.decir("No identifico que tipo de palabra es " + cad
+//				+ ".\nNecesito que me digas si es un verbo, sustantivo, adjetivo o simplemente ignorar");
+//		ingresarTipo(new Palabra(cad, AdaLovelace.escuchar()));
+//		busqueda = getTipo(cad);
+//		return busqueda;
+//	}
 
 	private static Tipo decodificarPorFrase(String texto) {
 		return AnalizadorSintactico.analizar(texto);
@@ -87,11 +96,26 @@ public class BD {
 		}
 	}
 
+	public static boolean ingresarPalabra(Palabra palabra) {
+		Transaction tx = session.beginTransaction();
+		try {
+			for (String tipo : palabra.tipos) {
+				session.save(new MapeoSintactico(palabra.palabra, tipo));
+				tx.commit();
+			}
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public static boolean ingresarTipo(String palabra, String tipo) {
 		Transaction tx = session.beginTransaction();
 		try {
-			MapeoDiccionario res = new MapeoDiccionario(palabra.toLowerCase(), tipo);
-			session.save(res);
+			session.save(new MapeoSintactico(palabra, tipo));
 			tx.commit();
 			return true;
 		} catch (Exception e) {
@@ -176,17 +200,35 @@ public class BD {
 		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
 	}
 
-	public static void conectarBD() {
-		Configuration conf = new Configuration();
-		conf.configure("BaseDeDatos/hibernate.cfg.xml");
-		factory = conf.buildSessionFactory();
-		session = factory.openSession();
+//	private static String googlearTipo(String palabra) {
+//		String linea;
+//		linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);
+//		Matcher m = Pattern.compile("<h2>" + palabra + ".{0,500}(sustantivo|adjetivo|verbo)").matcher(linea);
+//		if (m.find())
+//			return m.group(1);
+//
+//		return "ignorar";
+//
+//	}
+
+	private static String[] googlearTipos(String palabra) {
+		ArrayList<String> tipos = new ArrayList<>();
+		String linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);
+		Matcher m = compile.matcher(linea);
+		while (m.find()) {
+			String tipo = m.group(1).toLowerCase();
+			if (!tipos.contains(tipo))
+				tipos.add(tipo);
+		}
+		return (String[]) tipos.toArray();
 	}
 
-	private static String googlearTipo(String palabra) {
+	private static String getContenido(String palabra, String url) {
 		HttpURLConnection connection;
+		String linea;
 		try {
-			connection = (HttpURLConnection) new URL("https://es.thefreedictionary.com/" + palabra).openConnection();
+
+			connection = (HttpURLConnection) new URL(url).openConnection();
 			connection.addRequestProperty("User-Agent", "Mozilla/4.76");
 			connection.setConnectTimeout(15000);
 			connection.setReadTimeout(15000);
@@ -195,21 +237,15 @@ public class BD {
 			InputStream inputStream = connection.getInputStream();
 			InputStreamReader inputReader = new InputStreamReader(inputStream, "UTF-8");
 			BufferedReader lector = new BufferedReader(inputReader);
-			String linea = "";
+			linea = "";
 			String temp = "";
 			while ((temp = lector.readLine()) != null)
 				linea += temp;
 
-			Matcher m = Pattern.compile("<h2>" + palabra + ".{0,500}(sustantivo|adjetivo|verbo)").matcher(linea);
-
-			if (m.find())
-				return m.group(1);
-
-			return "ignorar";
-
 		} catch (Exception e) {
 			return null;
 		}
+		return linea;
 	}
 
 	@SuppressWarnings("all")
@@ -217,9 +253,8 @@ public class BD {
 		try {
 			Criteria cb = session.createCriteria(MapeoSintactico.class).add(Restrictions.eq("palabra", palabra));
 			List<MapeoSintactico> temp = cb.list();
-
 			if (temp.isEmpty()) {
-				decodificarTipo(palabra);
+				getTipos(palabra);
 				return tipoSintactico(palabra);
 			}
 
@@ -231,7 +266,14 @@ public class BD {
 			return null;
 		}
 	}
-	
+
+	private static void getTipos(String palabra) {
+		String [] tipos=googlearTipos(palabra);
+		for (String tipo : tipos) {
+			ingresarTipo(palabra, tipo);
+		}
+	}
+
 	@SuppressWarnings("all")
 	public static List<String> getCombinacionesSintactico() {
 		try {
@@ -240,6 +282,6 @@ public class BD {
 		} catch (Exception e) {
 			return null;
 		}
-	}	
+	}
 
 }

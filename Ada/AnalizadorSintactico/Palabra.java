@@ -15,7 +15,15 @@ public class Palabra {
 			tipos.add(string);
 		}
 	}
-	
+
+	public Palabra(String cad, String escuchar) {
+		this.palabra = cad;
+		tipos = new ArrayList<>();
+		for (String string : escuchar.split(",")) {
+			tipos.add(string.trim());
+		}
+	}
+
 	public boolean match(String tipo) {
 		return tipos.contains(tipo);
 	}
@@ -25,7 +33,6 @@ public class Palabra {
 	}
 
 	public boolean isSigno() {
-		// TODO Auto-generated method stub
-		return false;
+		return palabra.matches("\\W*");
 	}
 }
