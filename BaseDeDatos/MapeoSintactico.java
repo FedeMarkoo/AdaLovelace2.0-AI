@@ -10,6 +10,9 @@ public class MapeoSintactico {
 		this.tipo = tipo;
 	}
 
+	public MapeoSintactico() {
+	}
+
 	public String getPalabra() {
 		return palabra;
 	}

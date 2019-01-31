@@ -25,7 +25,7 @@ public class BD {
 
 	private static SessionFactory factory;
 	private static Session session = conectar();
-	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*(\\w+)\\s*<\\/i>");
+	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*([\\wá-ú]+)\\s*<\\/i>");
 
 	private static Session conectar() {
 		Configuration conf = new Configuration();
@@ -220,7 +220,12 @@ public class BD {
 			if (!tipos.contains(tipo))
 				tipos.add(tipo);
 		}
-		return (String[]) tipos.toArray();
+		String[] retorno = new String[tipos.size()];
+		int i = 0;
+		for (String tipo : tipos) {
+			retorno[i++] = tipo;
+		}
+		return retorno;
 	}
 
 	private static String getContenido(String palabra, String url) {
@@ -249,13 +254,15 @@ public class BD {
 	}
 
 	@SuppressWarnings("all")
-	public static String[] tipoSintactico(String palabra) {
+	public static String[] tipoSintactico(String palabra, int nivel) {
+		if (nivel == 2)
+			ingresarTipo(palabra, "ignorar");
 		try {
 			Criteria cb = session.createCriteria(MapeoSintactico.class).add(Restrictions.eq("palabra", palabra));
 			List<MapeoSintactico> temp = cb.list();
 			if (temp.isEmpty()) {
 				getTipos(palabra);
-				return tipoSintactico(palabra);
+				return tipoSintactico(palabra, ++nivel);
 			}
 
 			String[] retorno = new String[temp.size()];
@@ -263,12 +270,13 @@ public class BD {
 				retorno[temp.size() - 1] = temp.remove(0).getTipo();
 			return retorno;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
 	private static void getTipos(String palabra) {
-		String [] tipos=googlearTipos(palabra);
+		String[] tipos = googlearTipos(palabra);
 		for (String tipo : tipos) {
 			ingresarTipo(palabra, tipo);
 		}
@@ -276,12 +284,17 @@ public class BD {
 
 	@SuppressWarnings("all")
 	public static List<String> getCombinacionesSintactico() {
+		ArrayList<String> combo = new ArrayList<>();
 		try {
-			Criteria cb = session.createCriteria(MapeoTipoDeDato.class);
-			return cb.list();
+			Criteria cb = session.createCriteria(MapeoCombinacionesSintactico.class);
+
+			List<MapeoCombinacionesSintactico> list = cb.list();
+			for (MapeoCombinacionesSintactico temp : list) {
+				combo.add(temp.getCombo());
+			}
 		} catch (Exception e) {
-			return null;
 		}
+		return combo;
 	}
 
 }

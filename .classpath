@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="libs/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="libs/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-commons-annotations-5.0.1.Final.jar"/>
-	<classpathentry kind="lib" path="libs/hibernate-core-5.2.11.Final.jar"/>
+	<classpathentry kind="lib" path="libs/hibernate-core-5.2.11.Final.jar" sourcepath="C:/Users/Fede/.m2/repository/org/hibernate/hibernate-core/5.2.11.Final/hibernate-core-5.2.11.Final-sources.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-entitymanager.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate-jpa-2.1-api-1.0.0.Final.jar"/>
 	<classpathentry kind="lib" path="libs/hibernate4-sqlite-dialect-0.1.2.jar"/>

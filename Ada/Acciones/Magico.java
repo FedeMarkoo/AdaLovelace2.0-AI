@@ -18,35 +18,39 @@ public class Magico {
 	}
 
 	public static String ejecutar(Tipo juego, String parametro) {
+		if (juego == null)
+			return "";
+
 		String clase = capitalizar(juego.clase());
 		String metodo = juego.metodo();
-		Class<?> act;
+		Class<?> objeto;
 		try {
-			act = Class.forName("Objetos." + clase);
+			objeto = Class.forName("Objetos." + clase);
 		} catch (Exception e) {
-			return noReconoceElSustantivo(clase);
+			return noReconoceElSustantivo(clase, juego, parametro);
 		}
 		try {
-			Method method = act.getMethod(metodo, String.class);
-			String retorno = (String) method.invoke(1,parametro);
+			Method method = objeto.getMethod(metodo, String.class);
+			String retorno = (String) method.invoke(1, parametro);
 			return retorno;
 		} catch (Exception e) {
-			return noReconoceElVerbo(clase, metodo);
+			return noReconoceElVerbo(clase, metodo, juego, parametro);
 		}
 	}
 
 	public static String capitalizar(String clase) {
 		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
 	}
-	
-	private static String noReconoceElSustantivo(String clase) {
+
+	private static String noReconoceElSustantivo(String clase, Tipo tipo, String mensaje) {
 		AdaLovelace.decir(
 				"No entiendo lo que me estas pidiendo... \n" + clase + " es un sinomimo de un objeto ya registrado?");
 		if (AdaLovelace.escuchar().contains("si")) {
 			AdaLovelace.decir("Decime cual es su sinonimo");
-			if (BD.cargarSinonimoSustantivo(clase, AdaLovelace.escuchar()))
+			if (BD.cargarSinonimoSustantivo(clase, AdaLovelace.escuchar())) {
 				AdaLovelace.decir("Carga realiada con exito");
-			else
+				return ejecutar(tipo, mensaje);
+			} else
 				AdaLovelace.decir("No fue posible realizar la carga");
 		} else {
 			crearClase(clase);
@@ -54,14 +58,15 @@ public class Magico {
 		return "No tengo ni idea que hacer";
 	}
 
-	private static String noReconoceElVerbo(String clase, String verbo) {
+	private static String noReconoceElVerbo(String clase, String verbo, Tipo tipo, String mensaje) {
 		AdaLovelace.decir(
 				"No entiendo lo que me estas pidiendo... \n" + verbo + " es un sinomimo de una accion ya registrada?");
 		if (AdaLovelace.escuchar().contains("si")) {
 			AdaLovelace.decir("Decime cual es su sinonimo");
-			if (BD.cargarSinonimoVerbo(verbo, AdaLovelace.escuchar()))
+			if (BD.cargarSinonimoVerbo(verbo, AdaLovelace.escuchar())) {
 				AdaLovelace.decir("Carga realiada con exito");
-			else
+				return ejecutar(tipo, mensaje);
+			} else
 				AdaLovelace.decir("No fue posible realizar la carga");
 		} else {
 			AdaLovelace.decir("Desea agregar el codigo?");
@@ -70,8 +75,10 @@ public class Magico {
 				AdaLovelace.decir("Ingreselo");
 				codigo = AdaLovelace.escuchar();
 			}
-			if (agregarMetodo(clase, verbo, codigo))
-				return "Carga de codigo realizada con exito";
+			if (agregarMetodo(clase, verbo, codigo)) {
+				AdaLovelace.decir("Carga de codigo realizada con exito");
+				return ejecutar(tipo, mensaje);
+			}
 			return "No fue posible realizar la carga";
 		}
 		return "No tengo ni idea que hacer";
@@ -108,7 +115,7 @@ public class Magico {
 
 	public static boolean agregarMetodo(String clase, String metodo, String codigo) {
 		String texto = leerClase(clase);
-		if(metodo.trim().length() > 1)
+		if (metodo.trim().length() > 1)
 			return true;
 		texto = texto.substring(0, texto.lastIndexOf("}"));
 		if (!codigo.contains("return"))

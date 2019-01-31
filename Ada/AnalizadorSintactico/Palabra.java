@@ -11,9 +11,15 @@ public class Palabra {
 	public Palabra(String palabra) {
 		this.palabra = palabra;
 		tipos = new ArrayList<>();
-		for (String string : BD.tipoSintactico(palabra)) {
-			tipos.add(string);
-		}
+		String[] tipos = BD.tipoSintactico(palabra, 0);
+
+		if (tipos != null)
+			for (String string : tipos)
+				this.tipos.add(string);
+
+	}
+
+	public Palabra() {
 	}
 
 	public Palabra(String cad, String escuchar) {
@@ -34,5 +40,9 @@ public class Palabra {
 
 	public boolean isSigno() {
 		return palabra.matches("\\W*");
+	}
+
+	public boolean ignorar() {
+		return tipos.contains("ignorar");
 	}
 }

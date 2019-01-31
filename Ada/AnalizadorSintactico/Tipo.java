@@ -2,6 +2,8 @@ package Ada.AnalizadorSintactico;
 
 import java.util.ArrayList;
 
+import BaseDeDatos.BD;
+
 public class Tipo {
 
 	private boolean match;
@@ -14,7 +16,7 @@ public class Tipo {
 			palabraTemp.add(new Palabra(palabra));
 		}
 
-		Palabra[] palabras = (Palabra[]) palabraTemp.toArray();
+		Palabra[] palabras = (Palabra[]) palabraTemp.toArray(new Palabra[0]);
 		String[] tipos = combinacion.split(" ");
 		int indice = 0;
 		int desface = 0;
@@ -24,7 +26,7 @@ public class Tipo {
 			Palabra palabra = palabras[indice + desface];
 			String tipo = tipos[indice];
 			if (!palabra.match(tipo))
-				if (palabra.isAdverbio() || palabra.isSigno())
+				if (palabra.isAdverbio() || palabra.isSigno() || palabra.ignorar())
 					desface++;
 				else if (tipo.contains("?")) {
 					desface--;
@@ -37,13 +39,14 @@ public class Tipo {
 				indice++;
 				switch (tipo) {
 				case "sustantivo":
-					juego.addSustantivo(tipo);
+					juego.addSustantivo(palabra.palabra);
 					break;
 				case "adjetivo":
-					juego.addAdjetivo(tipo);
+					juego.addAdjetivo(palabra.palabra);
 					break;
+				case "interjección":
 				case "verbo":
-					juego.addVerbo(tipo);
+					juego.addVerbo(palabra.palabra);
 					break;
 				}
 			}
@@ -60,10 +63,13 @@ public class Tipo {
 	}
 
 	public String clase() {
-		return getJuegoPalabras().getSustantivos().get(0);
+		ArrayList<String> sustantivos = getJuegoPalabras().getSustantivos();
+		if(sustantivos.isEmpty())
+			return "yo";
+		return BD.getSinonimoObjeto(sustantivos.get(0));
 	}
 
 	public String metodo() {
-		return getJuegoPalabras().getVerbo().get(0);
+		return BD.getSinonimoVerbo(getJuegoPalabras().getVerbo().get(0));
 	}
 }

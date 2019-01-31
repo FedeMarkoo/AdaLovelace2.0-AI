@@ -6,7 +6,7 @@ import BaseDeDatos.BD;
 
 public class AnalizadorSintactico {
 
-	private static ArrayList<String> combinacionesSintacticas = cargarCombinaciones();
+	private static ArrayList<String> combinacionesSintacticas;
 
 	private static ArrayList<String> cargarCombinaciones() {
 		ArrayList<String> combo = new ArrayList<>();
@@ -15,12 +15,12 @@ public class AnalizadorSintactico {
 	}
 
 	public static Tipo analizar(String mensaje) {
+		combinacionesSintacticas = cargarCombinaciones();
 		for (String combinacion : combinacionesSintacticas) {
 			Tipo retorno = new Tipo(combinacion, mensaje);
 			if (retorno.match())
 				return retorno;
-		} // no se... deberia armar aca el retorno... pero se deberia modificar... que sea
-			// lista de objetos y verbos...
+		}
 		return null;
 	}
 
