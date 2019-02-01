@@ -1,19 +1,15 @@
 package Ada;
 
-import java.awt.EventQueue;
-
 import Ada.Acciones.Basico;
 import Ada.Acciones.Magico;
-import testeo.Manager;
 
 public class AdaLovelace {
-	
+
 	private Thread heart = new Thread() {
 		public void run() {
 			while (true) {
 				String escuchar = escuchar();
-				if (escuchar.trim().length() != 0)
-					Basico.decir(responder(escuchar));
+				Basico.decir(responder(escuchar));
 			}
 		}
 	};

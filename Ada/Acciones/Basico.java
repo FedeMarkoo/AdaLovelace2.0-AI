@@ -1,17 +1,45 @@
 package Ada.Acciones;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+
 import Ada.voz.Voz;
-import testeo.Manager;
 
 public class Basico {
 
+	private static DataInputStream bufferEntrada = null;
+	private static DataOutputStream bufferSalida = null;
+
+	{
+		Socket socket = null;
+		try {
+			socket = new Socket(InetAddress.getLocalHost(), 5050);
+			bufferEntrada = new DataInputStream(socket.getInputStream());
+			bufferSalida = new DataOutputStream(socket.getOutputStream());
+		} catch (Exception e) {
+		}
+		if (bufferSalida == null)
+			try {
+				socket.close();
+			} catch (Exception e) {
+			}
+	}
+
 	/**
-	 * La idea seria hacer que separe por silbvas (pordria se una regex que separe por [aeiou])
-	 * despues enviar la silaba a un sintetizador y tambien a un gestor de movimientos de cara para que parezca que habla
+	 * La idea seria hacer que separe por silbas (podria se una regex que separe por
+	 * [aeiou]) despues enviar la silaba a un sintetizador y tambien a un gestor de
+	 * movimientos de cara para que parezca que habla
+	 * 
 	 * @param texto
 	 */
 	public static void decir(String texto) {
-		Manager.dice.append("\n"+texto);
+		try {
+			bufferSalida.writeUTF(texto);
+		} catch (Exception e) {
+		}
 		Voz.speak(texto);
 	}
 
@@ -20,16 +48,10 @@ public class Basico {
 	}
 
 	public static String escuchar() {
-		while (!Manager.escucha.getText().contains("."))
-			try {
-				Thread.sleep(500);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-		String a = Manager.escucha.getText().replace(".", "").trim();
-		Manager.escucha.setText("");
-		Manager.dice.append("\n"+a);
-		return a;
+		try {
+			return bufferEntrada.readUTF();
+		} catch (IOException e) {
+			return "";
+		}
 	}
 }

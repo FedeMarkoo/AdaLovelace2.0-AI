@@ -77,8 +77,10 @@ public class Manager {
 	}
 
 	private void enviar(String text) {
+		if(text.trim().length()==0)
+			return;
 		try {
-			bufferDeSalida.writeUTF(text);
+			bufferDeSalida.writeUTF(text.trim());
 		} catch (IOException e) {
 		}
 	}
