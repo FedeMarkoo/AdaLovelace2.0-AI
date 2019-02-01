@@ -36,7 +36,7 @@ public class Voz {
 		try {
 			Runtime.getRuntime().exec("espeak -ves-la \"" + texto + "\"");
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("fallo al hablar");
 		}
 	}
 

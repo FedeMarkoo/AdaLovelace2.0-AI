@@ -19,7 +19,7 @@ public class Magico {
 
 	public static String ejecutar(Tipo juego, String parametro) {
 		if (juego == null)
-			return "";
+			return "Perdon pero no entendi.";
 
 		String clase = capitalizar(juego.clase());
 		String metodo = juego.metodo();

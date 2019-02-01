@@ -1,7 +1,7 @@
 package Ada.Acciones;
 
 import Ada.voz.Voz;
-import testeo.MainV;
+import testeo.Manager;
 
 public class Basico {
 
@@ -11,7 +11,7 @@ public class Basico {
 	 * @param texto
 	 */
 	public static void decir(String texto) {
-		MainV.dice.append("\n"+texto);
+		Manager.dice.append("\n"+texto);
 		Voz.speak(texto);
 	}
 
@@ -20,16 +20,16 @@ public class Basico {
 	}
 
 	public static String escuchar() {
-		while (!MainV.escucha.getText().contains("."))
+		while (!Manager.escucha.getText().contains("."))
 			try {
 				Thread.sleep(500);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-		String a = MainV.escucha.getText().replace(".", "").trim();
-		MainV.escucha.setText("");
-		MainV.dice.append("\n"+a);
+		String a = Manager.escucha.getText().replace(".", "").trim();
+		Manager.escucha.setText("");
+		Manager.dice.append("\n"+a);
 		return a;
 	}
 }

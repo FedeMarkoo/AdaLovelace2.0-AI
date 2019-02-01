@@ -3,14 +3,14 @@ package testeo;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import Ada.AdaLovelace;
-
-public class MainV {
+public class Manager {
 
 	public JFrame frame;
 	public static JTextField escucha;
@@ -19,7 +19,7 @@ public class MainV {
 	/**
 	 * Create the application.
 	 */
-	public MainV() {
+	public Manager() {
 		initialize();
 		frame.setVisible(true);
 	}
@@ -47,19 +47,23 @@ public class MainV {
 		gbc_textArea.gridy = 0;
 		frame.getContentPane().add(dice, gbc_textArea);
 
+		serversock = new ServerSocket(5050);
+		
+		
 		escucha = new JTextField();
+		escucha.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				
+			}
+		});
+		
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 0;
 		gbc_textField.gridy = 1;
 		frame.getContentPane().add(escucha, gbc_textField);
 		escucha.setColumns(10);
-		
-		new Thread() {
-			public void run() {
-				new AdaLovelace().iniciar();
-			}
-		}.start();
 	}
 
 }

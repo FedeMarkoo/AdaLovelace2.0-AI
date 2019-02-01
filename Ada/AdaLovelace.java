@@ -4,22 +4,10 @@ import java.awt.EventQueue;
 
 import Ada.Acciones.Basico;
 import Ada.Acciones.Magico;
-import testeo.MainV;
+import testeo.Manager;
 
 public class AdaLovelace {
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					new MainV();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
+	
 	private Thread heart = new Thread() {
 		public void run() {
 			while (true) {
@@ -32,10 +20,6 @@ public class AdaLovelace {
 
 	public static void decir(String texto) {
 		Basico.decir(texto);
-	}
-
-	public static void caminar(int x, int y) {
-		Basico.caminar(x, y);
 	}
 
 	public static String escuchar() {

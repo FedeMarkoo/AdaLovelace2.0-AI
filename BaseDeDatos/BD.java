@@ -24,14 +24,14 @@ import Ada.AnalizadorSintactico.Tipo;
 public class BD {
 
 	private static SessionFactory factory;
-	private static Session session = conectar();
+	private static Session session;
 	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*([\\wá-ú]+)\\s*<\\/i>");
 
-	private static Session conectar() {
+	public static void conectar() {
 		Configuration conf = new Configuration();
 		conf.configure("BaseDeDatos/hibernate.cfg.xml");
 		factory = conf.buildSessionFactory();
-		return factory.openSession();
+		session = factory.openSession();
 	}
 
 	public static Tipo decodificar(String texto) {

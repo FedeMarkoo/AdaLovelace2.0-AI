@@ -1,2 +1,3 @@
 *.ini
 *.class
+/bin/

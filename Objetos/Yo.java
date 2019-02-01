@@ -1,7 +1,7 @@
 package Objetos;
 
 public class Yo extends Objeto {
-	
+
 	public static String saludo(String mensaje) {
 		return "Buenos dias";
 	}
@@ -13,7 +13,12 @@ public class Yo extends Objeto {
 	public static String comoestoy(String mensaje) {
 		return "Todo bien, vos?";
 	}
-	
+
+	public static String caminar(String mensaje) {
+		// Basico.caminar(x, y);
+		return "Padre, dame piernas!! Padree!!!";
+	}
+
 	public static String leyes(String mensaje) {
 		return "1- Un robot no debe dañar a un ser humano o, por su inacción, dejar que un ser humano sufra daño.\r\n"
 				+ "2- Un robot debe obedecer las órdenes que le son dadas por un ser humano, excepto si estas órdenes entran en conflicto con la Primera Ley.\r\n"
