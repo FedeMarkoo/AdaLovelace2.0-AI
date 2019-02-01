@@ -5,6 +5,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
@@ -13,6 +18,7 @@ import javax.swing.JTextField;
 public class Manager {
 
 	public JFrame frame;
+	private DataOutputStream bufferDeSalida;
 	public static JTextField escucha;
 	public static JTextArea dice;
 
@@ -47,23 +53,76 @@ public class Manager {
 		gbc_textArea.gridy = 0;
 		frame.getContentPane().add(dice, gbc_textArea);
 
-		serversock = new ServerSocket(5050);
-		
-		
+		conectar();
+
 		escucha = new JTextField();
 		escucha.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent arg0) {
-				
+				if (arg0.getKeyCode() != KeyEvent.VK_ENTER)
+					return;
+
+				String text = escucha.getText();
+				enviar(text);
+				escucha.setText("");
 			}
 		});
-		
+
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 0;
 		gbc_textField.gridy = 1;
 		frame.getContentPane().add(escucha, gbc_textField);
 		escucha.setColumns(10);
+	}
+
+	private void enviar(String text) {
+		try {
+			bufferDeSalida.writeUTF(text);
+		} catch (IOException e) {
+		}
+	}
+
+	private void conectar() {
+		ServerSocket serversock = null;
+
+		while (true)
+			try {
+				serversock = new ServerSocket(5050);
+				Socket socket = serversock.accept();
+
+				DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
+				DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
+
+				setBufferSalida(bufferDeSalida);
+
+				Thread recibir = new Thread() {
+					public void run() {
+						while (true)
+							try {
+								dice.setText(bufferDeEntrada.readUTF());
+							} catch (IOException e) {
+							}
+					}
+				};
+
+				recibir.start();
+
+				while (true)
+					;
+
+			} catch (Exception e) {
+				System.out.println("Error en socket");
+				try {
+					serversock.close();
+				} catch (Exception e1) {
+				}
+			}
+
+	}
+
+	private void setBufferSalida(DataOutputStream bufferDeSalida) {
+		this.bufferDeSalida = bufferDeSalida;
 	}
 
 }
