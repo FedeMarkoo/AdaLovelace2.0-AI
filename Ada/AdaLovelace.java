@@ -5,14 +5,24 @@ import Ada.Acciones.Magico;
 
 public class AdaLovelace {
 
-	private Thread heart = new Thread() {
-		public void run() {
-			while (true) {
-				String escuchar = escuchar();
-				Basico.decir(responder(escuchar));
+	private Thread heart;
+
+	public static void main(String a[]) {
+		AdaLovelace ada = new AdaLovelace();
+		ada.iniciar();
+	}
+	
+	public AdaLovelace() {
+		System.out.println("iniciando Ada");
+		heart = new Thread() {
+			public void run() {
+				while (true) {
+					String escuchar = escuchar();
+					Basico.decir(responder(escuchar));
+				}
 			}
-		}
-	};
+		};
+	}
 
 	public static void decir(String texto) {
 		Basico.decir(texto);
@@ -24,12 +34,16 @@ public class AdaLovelace {
 
 	@SuppressWarnings("deprecation")
 	public boolean detener() {
+		if (heart == null)
+			return false;
 		heart.interrupt();
 		heart.stop();
 		return !heart.isAlive();
 	}
 
 	public boolean iniciar() {
+		if (heart == null)
+			return false;
 		heart.start();
 		return heart.isAlive();
 	}

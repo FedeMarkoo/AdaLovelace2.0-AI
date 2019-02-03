@@ -5,26 +5,42 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
+import BaseDeDatos.BD;
+import BaseDeDatos.MapeoClase;
 
 public class Manager {
 
-	public JFrame frame;
-	private DataOutputStream bufferDeSalida;
-	public static JTextField escucha;
-	public static JTextArea dice;
+	private JFrame frame;
+	private DataOutputStream bufferSalida;
+	private DataInputStream bufferEntrada;
+	private static JTextField escucha;
+	private static JTextArea dice;
 
 	/**
 	 * Create the application.
 	 */
+
+	public static void main(String[] a) {
+		new Manager();
+	}
+
 	public Manager() {
 		initialize();
 		frame.setVisible(true);
@@ -77,54 +93,109 @@ public class Manager {
 	}
 
 	private void enviar(String text) {
-		if(text.trim().length()==0)
+		if (text.trim().length() == 0)
 			return;
 		try {
-			bufferDeSalida.writeUTF(text.trim());
+			bufferSalida.writeUTF(text.trim());
 		} catch (IOException e) {
 		}
 	}
 
 	private void conectar() {
-		ServerSocket serversock = null;
-
-		while (true)
-			try {
-				serversock = new ServerSocket(5050);
-				Socket socket = serversock.accept();
-
-				DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
-				DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
-
-				setBufferSalida(bufferDeSalida);
-
-				Thread recibir = new Thread() {
-					public void run() {
-						while (true)
-							try {
-								dice.setText(bufferDeEntrada.readUTF());
-							} catch (IOException e) {
-							}
-					}
-				};
-
-				recibir.start();
+		new Thread() {
+			public void run() {
+				ServerSocket serversock = null;
 
 				while (true)
-					;
+					try {
+						serversock = new ServerSocket(5050);
+						adaManager();
+						Socket socket = serversock.accept();
 
-			} catch (Exception e) {
-				System.out.println("Error en socket");
-				try {
-					serversock.close();
-				} catch (Exception e1) {
-				}
+						DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
+						DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
+
+						setBuffers(bufferDeSalida, bufferDeEntrada);
+						System.out.println("server conectado y buffers conectados");
+
+						while (true)
+							try {
+								dice.setText(bufferEntrada.readUTF());
+							} catch (Exception e) {
+							}
+
+					} catch (Exception e) {
+						System.out.println("Error en socket");
+						try {
+							serversock.close();
+						} catch (Exception e1) {
+						}
+					}
 			}
-
+		}.start();
 	}
 
-	private void setBufferSalida(DataOutputStream bufferDeSalida) {
-		this.bufferDeSalida = bufferDeSalida;
+	private void setBuffers(DataOutputStream bufferDeSalida, DataInputStream bufferDeEntrada) {
+		this.bufferSalida = bufferDeSalida;
+		this.bufferEntrada = bufferDeEntrada;
+	}
+
+	private void adaManager() {
+		new Thread() {
+			public void run() {
+				Process p = null;
+				Date modificado = new Date(0);
+				while (true) {
+					String last = BD.getUltimaModificacion();
+					// 2007-12-03T10:15:30.00Z.
+					Date ultimo = Date.from(Instant.parse(last));
+					if (modificado.before(ultimo)) {
+						modificado = ultimo;
+						if (p != null)
+							p.destroy();
+						p = recompilar();
+					}
+				}
+			}
+		}.start();
+	}
+
+	private Process recompilar() {
+		String path = System.getProperty("user.dir");
+		int fin = path.indexOf("AdaLovelace2.0-AI");
+		path = path.substring(0, fin);
+		path += "AdaLovelace2.0-AI\\";
+		String pathAda = path + "Ada\\AdaLovelace.java";
+
+		List<MapeoClase> clases = BD.getClases();
+
+		for (MapeoClase clase : clases) {
+			try {
+				String nombre = path + clase.getNombre().replaceAll("\\.", "\\").replace("\\java", ".java");
+				BufferedWriter f = new BufferedWriter(new FileWriter(nombre));
+				f.write(clase.getCodigo());
+				f.close();
+			} catch (Exception e) {
+			}
+		}
+
+		try {
+
+//			Runtime.getRuntime().exec("javac \"" + pathAda + "\"");
+			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+			if (compiler == null) {
+				System.setProperty("java.home", "C:\\Program Files\\Java\\jdk1.8.0_191");
+				compiler = ToolProvider.getSystemJavaCompiler();
+			}
+			compiler.run(null, null, null, pathAda);
+		} catch (Exception e) {
+		}
+
+		try {
+			return Runtime.getRuntime().exec("java -classpath \"C:\\Users\\Fede\\Escritorio\\Proyectos\\AdaLovelace2.0-AI\" Ada.AdaLovelace");
+		} catch (Exception e) {
+		}
+		return null;
 	}
 
 }

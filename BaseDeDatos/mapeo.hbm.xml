@@ -7,6 +7,7 @@
 		<property column="sinonimo" generated="never" lazy="false"
 			name="sinonimo" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoObjetos" table="Objeto">
 		<id column="objeto" name="objeto" type="string" />
 		<property column="cantidadDeLlamados" generated="never"
@@ -14,16 +15,19 @@
 		<property column="sinonimo" generated="never" lazy="false"
 			name="sinonimo" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoDiccionario" table="Diccionario">
 		<id column="palabra" name="palabra" type="string" />
 		<property column="tipo" generated="never" lazy="false"
 			name="tipo" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoTipoDeDato" table="TipoDato">
 		<id column="atributo" name="atributo" type="string" />
 		<property column="tipo" generated="never" lazy="false"
 			name="tipo" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoFrases" table="Frases">
 		<id column="frase" name="frase" type="string" />
 		<property column="verbo" generated="never" lazy="false"
@@ -31,13 +35,22 @@
 		<property column="objeto" generated="never" lazy="false"
 			name="objeto" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoSintactico" table="ASintactico">
 		<id column="palabra" name="palabra" type="string" />
 				<property column="tipo" generated="never" lazy="false"
 			name="tipo" type="string" />
 	</class>
+	
 	<class name="BaseDeDatos.MapeoCombinacionesSintactico"
 		table="CSintactico">
 		<id column="combo" name="combo" type="string" />
 	</class>
+	
+	<class name="BaseDeDatos.MapeoClase" table="clases">
+		<id column="nombre" name="nombre" type="string" />
+		<property column="codigo" name="codigo" type="string" />
+		<property column="fecha" name="fecha" type="string" />
+	</class>
+
 </hibernate-mapping>

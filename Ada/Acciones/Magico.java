@@ -1,14 +1,14 @@
 package Ada.Acciones;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.Scanner;
 
 import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.Tipo;
 import BaseDeDatos.BD;
+import BaseDeDatos.MapeoClase;
 
 public class Magico {
 
@@ -98,7 +98,7 @@ public class Magico {
 	}
 
 	private static String getClassName(String clase) {
-		return System.getenv("AdaLovelace2.0") + "Objetos\\" + clase + ".java";
+		return System.getenv("AdaLovelace2.0") + "Objetos." + clase + ".java";
 	}
 
 	private static boolean crearClase(String clase) {
@@ -129,10 +129,9 @@ public class Magico {
 	}
 
 	private static boolean escribirArchivo(String clase, String texto) {
+
 		try {
-			BufferedWriter f = new BufferedWriter(new FileWriter(getClassName(clase)));
-			f.write(texto);
-			f.close();
+			BD.ingresarClase(new MapeoClase(clase, texto, Instant.now().toString()));
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import Ada.AnalizadorSintactico.AnalizadorSintactico;
@@ -295,6 +296,46 @@ public class BD {
 		} catch (Exception e) {
 		}
 		return combo;
+	}
+
+	public static String getUltimaModificacion() {
+		if(session==null)
+			conectar();
+		try {
+			@SuppressWarnings("deprecation")
+			Criteria cb = session.createCriteria(MapeoClase.class).addOrder(Order.desc("fecha")).setMaxResults(1);
+			return ((MapeoClase) cb.uniqueResult()).getFecha();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+
+	@SuppressWarnings("all")
+	public static List<MapeoClase> getClases() {
+		try {
+			Criteria cb = session.createCriteria(MapeoClase.class);
+			return  (List<MapeoClase>)cb.list();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static boolean ingresarClase(MapeoClase mapeoClase) {
+		if(session==null)
+			conectar();
+		Transaction tx = session.beginTransaction();
+		try {
+			session.saveOrUpdate(mapeoClase);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
