@@ -1,0 +1,30 @@
+<project>
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="lib.dir" value="../libs" />
+	<property name="src.dir" value="Manager" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="/*.jar" />
+		<fileset dir="${src.dir}" includes="/"/>
+	</path>
+
+	<target name="compile">
+		<presetdef name="javac">
+			<javac includeantruntime="false" />
+		</presetdef>
+		<mkdir dir="build/classes" />
+		<jar destfile="${jar.name}" basedir="${classes.dir}" includes="**" />
+		<javac srcdir="../AdaSrc" destdir="build/classes" encoding="iso-8859-1" classpathref="classpath" />
+	</target>
+
+	<target name="jar">
+		<mkdir dir="build/jar" />
+		<jar destfile="build/AdaLovelace.jar" basedir="build/classes">
+			<manifest>
+				<attribute name="Main-Class" value="Ada.AdaLovelace" />
+			</manifest>
+		</jar>
+	</target>
+
+</project>

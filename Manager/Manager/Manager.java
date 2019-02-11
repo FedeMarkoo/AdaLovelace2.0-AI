@@ -1,0 +1,215 @@
+package Manager;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import BaseDeDatos.BD;
+import BaseDeDatos.MapeoClase;
+
+public class Manager {
+
+	private JFrame frame;
+	private static DataOutputStream bufferSalida;
+	private static DataInputStream bufferEntrada;
+	private static JTextField escucha;
+	private static JTextArea dice;
+	public static Thread adaManagerThread = new Thread() {
+		public void run() {
+			System.out.println("run");
+			this.setName("AdaManagerThread");
+			Process p = null;
+			Date modificado = new Date(0);
+			String last = BD.getUltimaModificacion();
+				// 2007-12-03T10:15:30.00Z.
+				Date ultimo = Date.from(Instant.parse(last));
+				if (modificado.before(ultimo)) {
+					modificado = ultimo;
+					if (p != null)
+						p.destroy();
+					p = recompilar();
+				}
+		}
+	};
+
+	/**
+	 * Create the application.
+	 */
+
+	public static void main(String[] a) {
+		System.out.println("main");
+		new Manager();
+	}
+
+	public Manager() {
+		System.out.println("Manager");
+		initialize();
+		frame.setVisible(true);
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		System.out.println("initialize");
+		frame = new JFrame();
+		frame.setBounds(100, 100, 343, 393);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[] { 0, 0 };
+		gridBagLayout.rowHeights = new int[] { 0, 0, 0 };
+		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 1.0, 0.0, Double.MIN_VALUE };
+		frame.getContentPane().setLayout(gridBagLayout);
+
+		dice = new JTextArea();
+		dice.setEditable(false);
+		GridBagConstraints gbc_textArea = new GridBagConstraints();
+		gbc_textArea.insets = new Insets(0, 0, 5, 0);
+		gbc_textArea.fill = GridBagConstraints.BOTH;
+		gbc_textArea.gridx = 0;
+		gbc_textArea.gridy = 0;
+		frame.getContentPane().add(dice, gbc_textArea);
+
+		conectar();
+
+		escucha = new JTextField();
+		escucha.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if (arg0.getKeyCode() != KeyEvent.VK_ENTER)
+					return;
+				String text = escucha.getText();
+				enviar(text);
+				dice.append("\n" + text);
+				escucha.setText("");
+			}
+		});
+
+		GridBagConstraints gbc_textField = new GridBagConstraints();
+		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_textField.gridx = 0;
+		gbc_textField.gridy = 1;
+		frame.getContentPane().add(escucha, gbc_textField);
+		escucha.setColumns(10);
+	}
+
+	private void enviar(String text) {
+		System.out.println("enviar");
+		if (text.trim().length() == 0 || bufferSalida == null)
+			return;
+		try {
+			bufferSalida.writeUTF(text.trim());
+		} catch (IOException e) {
+		}
+	}
+
+	private void conectar() {
+		System.out.println("conectar");
+		new Thread() {
+			public void run() {
+				ServerSocket serversock = null;
+				try {
+					serversock = new ServerSocket(5050);
+				} catch (Exception e2) {
+				}
+				while (true)
+					try {
+						System.out.println("Conectando Socket");
+						adaManager();
+						Socket socket = serversock.accept();
+						System.out.println("Socket conectado");
+						DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
+						DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
+						setBuffers(bufferDeSalida, bufferDeEntrada);
+
+						while (true)
+							try {
+								String readUTF = bufferEntrada.readUTF();
+								if (readUTF.contains("Clase-Actualizada-RECOMPILAR-COD:92929"))
+									adaManagerThread.start();
+								else
+									dice.setText(readUTF);
+							} catch (Exception e) {
+							}
+
+					} catch (Exception e) {
+						System.out.println("Error en socket");
+						e.printStackTrace();
+						try {
+							serversock.close();
+						} catch (Exception e1) {
+						}
+					}
+			}
+		}.start();
+	}
+
+	private static void setBuffers(DataOutputStream bufferDeSalida, DataInputStream bufferDeEntrada) {
+		System.out.println("setBuffers");
+		bufferSalida = bufferDeSalida;
+		bufferEntrada = bufferDeEntrada;
+	}
+
+	private void adaManager() {
+		System.out.println("adaManager");
+		if (!adaManagerThread.isInterrupted())
+			adaManagerThread.start();
+	}
+
+	private static Process recompilar() {
+		System.out.println("recompilar");
+		String path = System.getProperty("user.dir");
+		int fin = path.indexOf("AdaLovelace2.0-AI");
+		path = path.substring(0, fin);
+		path += "AdaLovelace2.0-AI\\";
+
+		List<MapeoClase> clases = BD.getClases();
+		for (MapeoClase clase : clases) {
+			if (!clase.getNombre().contains("Manager"))
+				try {
+					String nombre = path.substring(0, path.length() - 1);
+					String parte = clase.getNombre().replace("AdaLovelace2.0-AI.", "");
+					String[] split = parte.split("\\.");
+					for (String cad : split)
+						nombre += "\\" + cad;
+
+					nombre = nombre.replace("\\java", ".java").replace("\\sql", ".sql")
+							.replace("\\cfg\\xml", ".cfg.xml").replace("\\hbm\\xml", ".hbm.xml");
+					BufferedWriter f = new BufferedWriter(new FileWriter(nombre));
+					f.write(clase.getCodigo());
+					f.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		}
+
+		try {
+			System.out.println("Corriendo ANT");
+			Runtime.getRuntime().exec("cmd /c ant");
+			System.out.println("Corriendo ADA");
+			Process p = Runtime.getRuntime().exec("cmd /c build\\AdaLovelace.jar");
+			return p;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}

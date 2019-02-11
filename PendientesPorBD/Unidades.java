@@ -53,4 +53,3 @@ public class Unidades extends RespuestaGenerico {
 		return  "No se pudo realizar la conversión";
 	}
 }
-
