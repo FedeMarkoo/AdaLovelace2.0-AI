@@ -11,7 +11,7 @@ public class Tipo {
 
 	public Tipo(String combinacion, String mensaje) {
 		juego = new JuegoPalabras();
-		ArrayList<Palabra> palabraTemp = new ArrayList<>();
+		ArrayList<Palabra> palabraTemp = new ArrayList<Palabra>();
 		for (String palabra : mensaje.split(" ")) {
 			palabraTemp.add(new Palabra(palabra));
 		}

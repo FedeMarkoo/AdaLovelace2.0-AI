@@ -143,7 +143,7 @@ public class Manager {
 								if (readUTF.contains("Clase-Actualizada-RECOMPILAR-COD:92929"))
 									adaManagerThread.start();
 								else
-									dice.setText(readUTF);
+									dice.append(readUTF);
 							} catch (Exception e) {
 							}
 
@@ -167,7 +167,7 @@ public class Manager {
 
 	private void adaManager() {
 		System.out.println("adaManager");
-		if (!adaManagerThread.isInterrupted())
+		if (!adaManagerThread.isAlive())
 			adaManagerThread.start();
 	}
 

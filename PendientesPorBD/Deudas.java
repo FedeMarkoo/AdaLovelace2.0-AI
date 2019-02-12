@@ -59,7 +59,7 @@ public class Deudas extends RespuestaGenerico {
 
 	private String deudasGrupales(String mensaje) {
 		Matcher match = regexDeudasGrupales.matcher(mensaje);
-		ArrayList<String> deudores = new ArrayList<>();
+		ArrayList<String> deudores = new ArrayList<String>();
 		while (match.find()) {
 			String group = match.group(1);
 			if (group == null)

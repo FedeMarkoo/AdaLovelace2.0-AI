@@ -213,7 +213,7 @@ public class BD {
 //	}
 
 	private static String[] googlearTipos(String palabra) {
-		ArrayList<String> tipos = new ArrayList<>();
+		ArrayList<String> tipos = new ArrayList<String>();
 		String linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);
 		Matcher m = compile.matcher(linea);
 		while (m.find()) {
@@ -285,7 +285,7 @@ public class BD {
 
 	@SuppressWarnings("all")
 	public static List<String> getCombinacionesSintactico() {
-		ArrayList<String> combo = new ArrayList<>();
+		ArrayList<String> combo = new ArrayList<String>();
 		try {
 			Criteria cb = session.createCriteria(MapeoCombinacionesSintactico.class);
 

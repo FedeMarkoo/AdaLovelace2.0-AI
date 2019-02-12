@@ -48,7 +48,7 @@ public class Basico {
 			bufferSalida.writeUTF(texto);
 		} catch (Exception e) {
 		}
-		Voz.speak(texto);
+		//Voz.speak(texto);
 	}
 
 	public static void caminar(int x, int y) {

@@ -9,7 +9,7 @@ public class AnalizadorSintactico {
 	private static ArrayList<String> combinacionesSintacticas;
 
 	private static ArrayList<String> cargarCombinaciones() {
-		ArrayList<String> combo = new ArrayList<>();
+		ArrayList<String> combo = new ArrayList<String>();
 		combo.addAll(BD.getCombinacionesSintactico());
 		return combo;
 	}

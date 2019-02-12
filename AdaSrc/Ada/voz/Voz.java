@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Voz {
 
-	private static ArrayList<String> lista = new ArrayList<>();
+	private static ArrayList<String> lista = new ArrayList<String>();
 	private static Thread hilo = new Thread() {
 		public void run() {
 			this.setName("Voz");

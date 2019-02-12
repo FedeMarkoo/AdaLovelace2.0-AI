@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class JuegoPalabras {
-	private ArrayList<String> sustantivos = new ArrayList<>();
-	private ArrayList<String> verbos = new ArrayList<>();
-	private ArrayList<String> adjetivo = new ArrayList<>();
+	private ArrayList<String> sustantivos = new ArrayList<String>();
+	private ArrayList<String> verbos = new ArrayList<String>();
+	private ArrayList<String> adjetivo = new ArrayList<String>();
 
 	public ArrayList<String> getSustantivos() {
 		return sustantivos;

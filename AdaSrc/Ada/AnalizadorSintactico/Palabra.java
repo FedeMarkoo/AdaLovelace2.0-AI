@@ -10,7 +10,7 @@ public class Palabra {
 
 	public Palabra(String palabra) {
 		this.palabra = palabra;
-		tipos = new ArrayList<>();
+		tipos = new ArrayList<String>();
 		String[] tipos = BD.tipoSintactico(palabra, 0);
 
 		if (tipos != null)
@@ -24,7 +24,7 @@ public class Palabra {
 
 	public Palabra(String cad, String escuchar) {
 		this.palabra = cad;
-		tipos = new ArrayList<>();
+		tipos = new ArrayList<String>();
 		for (String string : escuchar.split(",")) {
 			tipos.add(string.trim());
 		}
