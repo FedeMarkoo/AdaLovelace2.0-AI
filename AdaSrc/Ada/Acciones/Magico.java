@@ -9,7 +9,6 @@ import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.Tipo;
 import BaseDeDatos.BD;
 import BaseDeDatos.MapeoClase;
-import Manager.Manager;
 
 public class Magico {
 
@@ -131,6 +130,7 @@ public class Magico {
 		try {
 			BD.ingresarClase(new MapeoClase(clase, texto, Instant.now().toString()));
 			AdaLovelace.decir("Clase-Actualizada-RECOMPILAR-COD:92929");
+			System.exit(0);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

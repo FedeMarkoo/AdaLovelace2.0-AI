@@ -19,12 +19,16 @@
 	</target>
 
 	<target name="jar">
-		<mkdir dir="build/jar" />
 		<jar destfile="build/AdaLovelace.jar" basedir="build/classes">
 			<manifest>
 				<attribute name="Main-Class" value="Ada.AdaLovelace" />
 			</manifest>
 		</jar>
 	</target>
+	
+    <target name="run">
+        <java jar="build/AdaLovelace.jar" fork="true"/>
+    </target>
+
 
 </project>

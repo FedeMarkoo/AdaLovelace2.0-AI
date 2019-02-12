@@ -14,6 +14,7 @@ public class AdaLovelace {
 	
 	public AdaLovelace() {
 		System.out.println("iniciando Ada");
+		Basico.decir("Conectada");
 		heart = new Thread() {
 			public void run() {
 				while (true) {

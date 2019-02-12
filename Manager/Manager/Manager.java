@@ -34,16 +34,13 @@ public class Manager {
 		public void run() {
 			System.out.println("run");
 			this.setName("AdaManagerThread");
-			Process p = null;
 			Date modificado = new Date(0);
 			String last = BD.getUltimaModificacion();
 				// 2007-12-03T10:15:30.00Z.
 				Date ultimo = Date.from(Instant.parse(last));
 				if (modificado.before(ultimo)) {
 					modificado = ultimo;
-					if (p != null)
-						p.destroy();
-					p = recompilar();
+					recompilar();
 				}
 		}
 	};
@@ -111,11 +108,12 @@ public class Manager {
 	}
 
 	private void enviar(String text) {
-		System.out.println("enviar");
 		if (text.trim().length() == 0 || bufferSalida == null)
 			return;
 		try {
+			System.out.println("enviar");
 			bufferSalida.writeUTF(text.trim());
+			System.out.println("enviado");
 		} catch (IOException e) {
 		}
 	}
@@ -180,6 +178,18 @@ public class Manager {
 		path = path.substring(0, fin);
 		path += "AdaLovelace2.0-AI\\";
 
+		//escribirClasesDesdeBD(path);
+
+		try {
+			System.out.println("Corriendo ANT");
+			Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	static void escribirClasesDesdeBD(String path) {
 		List<MapeoClase> clases = BD.getClases();
 		for (MapeoClase clase : clases) {
 			if (!clase.getNombre().contains("Manager"))
@@ -199,17 +209,6 @@ public class Manager {
 					e.printStackTrace();
 				}
 		}
-
-		try {
-			System.out.println("Corriendo ANT");
-			Runtime.getRuntime().exec("cmd /c ant");
-			System.out.println("Corriendo ADA");
-			Process p = Runtime.getRuntime().exec("cmd /c build\\AdaLovelace.jar");
-			return p;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 }
