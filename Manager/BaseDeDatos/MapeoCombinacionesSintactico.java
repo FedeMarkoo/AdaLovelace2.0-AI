@@ -4,6 +4,10 @@ public class MapeoCombinacionesSintactico {
 
 	private String combo;
 
+	public MapeoCombinacionesSintactico(String combo) {
+		this.combo = combo;
+	}
+
 	public String getCombo() {
 		return combo;
 	}
@@ -11,5 +15,5 @@ public class MapeoCombinacionesSintactico {
 	public void setCombo(String combo) {
 		this.combo = combo;
 	}
-	
+
 }

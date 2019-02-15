@@ -13,8 +13,8 @@ public class AdaLovelace {
 	}
 	
 	public AdaLovelace() {
-		System.out.println("iniciando Ada");
-		Basico.decir("Conectada");
+		Basico.conectar();
+		Basico.decir("iniciando Ada");
 		heart = new Thread() {
 			public void run() {
 				while (true) {

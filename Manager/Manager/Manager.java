@@ -10,9 +10,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,11 +23,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import BaseDeDatos.BD;
+import BaseDeDatos.BDAda;
 import BaseDeDatos.MapeoClase;
 
 public class Manager {
 
 	private JFrame frame;
+	private String anterior = "";
 	private static DataOutputStream bufferSalida;
 	private static DataInputStream bufferEntrada;
 	private static JTextField escucha;
@@ -35,13 +39,26 @@ public class Manager {
 			System.out.println("run");
 			this.setName("AdaManagerThread");
 			Date modificado = new Date(0);
-			String last = BD.getUltimaModificacion();
-				// 2007-12-03T10:15:30.00Z.
-				Date ultimo = Date.from(Instant.parse(last));
-				if (modificado.before(ultimo)) {
-					modificado = ultimo;
-					recompilar();
-				}
+			// String last = BD.getUltimaModificacion();
+			String last = "2007-12-03T10:15:30.00Z";
+			// 2007-12-03T10:15:30.00Z.
+			Date ultimo = Date.from(Instant.parse(last));
+			if (modificado.before(ultimo)) {
+				modificado = ultimo;
+				recompilar();
+			}
+		}
+	};
+
+	private static Thread bdAdaManger = new Thread() {
+		public void run() {
+			BDAda bdAda = new BDAda();
+			try {
+				Method method = BD.class.getMethod((String) bdAda.recibirComando());
+				Object invoke = method.invoke(1, bdAda.recibirComando());
+				bdAda.enviarComando(invoke);
+			} catch (Exception e) {
+			}
 		}
 	};
 
@@ -94,10 +111,12 @@ public class Manager {
 					return;
 				String text = escucha.getText();
 				enviar(text);
-				dice.append("\n" + text);
+				dice.append((anterior.equals("Usted") ? "\n" : "\n\nUsted:\n") + text);
+				anterior = "Usted";
 				escucha.setText("");
 			}
 		});
+		escucha.setEnabled(false);
 
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
@@ -131,25 +150,32 @@ public class Manager {
 					try {
 						System.out.println("Conectando Socket");
 						adaManager();
+						bdAdaManger.start();
 						Socket socket = serversock.accept();
 						System.out.println("Socket conectado");
 						DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
 						DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
 						setBuffers(bufferDeSalida, bufferDeEntrada);
-
-						while (true)
-							try {
+						escucha.setEnabled(true);
+						try {
+							while (true) {
 								String readUTF = bufferEntrada.readUTF();
 								if (readUTF.contains("Clase-Actualizada-RECOMPILAR-COD:92929"))
 									adaManagerThread.start();
-								else
-									dice.append(readUTF);
-							} catch (Exception e) {
+
+								else {
+									dice.append((anterior.equals("Ada") ? "\n" : "\n\nAda:\n") + readUTF);
+									anterior = "Ada";
+								}
+
 							}
+						} catch (Exception e) {
+						}
 
 					} catch (Exception e) {
 						System.out.println("Error en socket");
 						e.printStackTrace();
+						escucha.setEnabled(false);
 						try {
 							serversock.close();
 						} catch (Exception e1) {
@@ -178,7 +204,7 @@ public class Manager {
 		path = path.substring(0, fin);
 		path += "AdaLovelace2.0-AI\\";
 
-		//escribirClasesDesdeBD(path);
+		// escribirClasesDesdeBD(path);
 
 		try {
 			System.out.println("Corriendo ANT");
@@ -189,7 +215,7 @@ public class Manager {
 		return null;
 	}
 
-	static void escribirClasesDesdeBD(String path) {
+	public static void escribirClasesDesdeBD(String path) {
 		List<MapeoClase> clases = BD.getClases();
 		for (MapeoClase clase : clases) {
 			if (!clase.getNombre().contains("Manager"))

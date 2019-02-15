@@ -25,6 +25,10 @@ import Ada.AnalizadorSintactico.Tipo;
 
 public class BD {
 
+	private static SessionFactory factory;
+	private static Session session = conectar();
+	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*([\\wá-ú]+)\\s*<\\/i>");
+
 	public static Session conectar() {
 		Configuration conf = new Configuration();
 		conf.configure("BaseDeDatos/hibernate.cfg.xml");
@@ -35,6 +39,47 @@ public class BD {
 	public static Tipo decodificar(String texto) {
 		Tipo deco = decodificarPorFrase(texto);
 		return deco;
+	}
+
+	private static Tipo decodificarPorFrase(String texto) {
+		Tipo comboSintactico = AnalizadorSintactico.analizar(texto);
+		if (comboSintactico == null)
+			if (ingresarCombo(texto))
+				return decodificarPorFrase(texto);
+			else
+				Basico.decir("No se reconoce la oracion");
+		return comboSintactico;
+	}
+
+	private static boolean ingresarCombo(String texto) {
+		Basico.decir("Desea ingresar el tipo de oracion?");
+		String escuchar = Basico.escuchar();
+		if (escuchar.contains("s")) {
+			Basico.decir("Por favor, ingrese como se compone la oracion.");
+			Basico.decir("Por ejemplo, Sustantivo verbo sustantico adjetivo");
+			Basico.decir("Puede usarse el caracter ? para indicar que una palabra es opcional");
+			String combo = Basico.escuchar();
+			if (BD.cargarCombo(combo)) {
+				Basico.decir("Carga realizada con exito.");
+				return false;
+			} else
+				Basico.decir("Fallo al cargar la compocicion sintactica");
+		}
+		return false;
+	}
+
+	private static boolean cargarCombo(String combo) {
+		Transaction tx = session.beginTransaction();
+		try {
+			session.save(new MapeoCombinacionesSintactico(combo));
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static String getTipo(String cad) {
@@ -169,7 +214,9 @@ public class BD {
 		return null;
 	}
 
-	
+	private static String capitalizar(String clase) {
+		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
+	}
 
 //	private static String googlearTipo(String palabra) {
 //		String linea;
@@ -181,6 +228,77 @@ public class BD {
 //		return "ignorar";
 //
 //	}
+
+	private static String[] googlearTipos(String palabra) {
+		ArrayList<String> tipos = new ArrayList<String>();
+		String linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);
+		Matcher m = compile.matcher(linea);
+		while (m.find()) {
+			String tipo = m.group(1).toLowerCase();
+			if (!tipos.contains(tipo))
+				tipos.add(tipo);
+		}
+		String[] retorno = new String[tipos.size()];
+		int i = 0;
+		for (String tipo : tipos) {
+			retorno[i++] = tipo;
+		}
+		return retorno;
+	}
+
+	private static String getContenido(String palabra, String url) {
+		HttpURLConnection connection;
+		String linea;
+		try {
+
+			connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.addRequestProperty("User-Agent", "Mozilla/4.76");
+			connection.setConnectTimeout(15000);
+			connection.setReadTimeout(15000);
+			connection.setInstanceFollowRedirects(true);
+			connection.connect();
+			InputStream inputStream = connection.getInputStream();
+			InputStreamReader inputReader = new InputStreamReader(inputStream, "UTF-8");
+			BufferedReader lector = new BufferedReader(inputReader);
+			linea = "";
+			String temp = "";
+			while ((temp = lector.readLine()) != null)
+				linea += temp;
+
+		} catch (Exception e) {
+			return null;
+		}
+		return linea;
+	}
+
+	@SuppressWarnings("all")
+	private static String[] tipoSintactico(String palabra, int nivel) {
+		if (nivel == 2)
+			ingresarTipo(palabra, "ignorar");
+		try {
+			Criteria cb = session.createCriteria(MapeoSintactico.class).add(Restrictions.eq("palabra", palabra));
+			List<MapeoSintactico> temp = cb.list();
+			if (temp.isEmpty()) {
+				getTipos(palabra);
+				return tipoSintactico(palabra, ++nivel);
+			}
+
+			String[] retorno = new String[temp.size()];
+			while (!temp.isEmpty())
+				retorno[temp.size() - 1] = temp.remove(0).getTipo();
+			return retorno;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private static void getTipos(String palabra) {
+		String[] tipos = googlearTipos(palabra);
+		for (String tipo : tipos) {
+			ingresarTipo(palabra, tipo);
+		}
+	}
 
 	@SuppressWarnings("all")
 	public static List<String> getCombinacionesSintactico() {

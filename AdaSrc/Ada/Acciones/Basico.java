@@ -2,36 +2,32 @@ package Ada.Acciones;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-
-import Ada.voz.Voz;
 
 public class Basico {
 
 	private static DataInputStream bufferEntrada = null;
 	private static DataOutputStream bufferSalida = null;
 
-	private static void conectar() {
+	public static void conectar() {
 		Socket socket = null;
-		while (socket == null)
+		while (socket == null) {
 			try {
 				socket = new Socket(InetAddress.getLocalHost(), 5050);
 			} catch (Exception e) {
 			}
-		try {
-			bufferEntrada = new DataInputStream(socket.getInputStream());
-			bufferSalida = new DataOutputStream(socket.getOutputStream());
-		} catch (
-
-		Exception e) {
-		}
-		if (bufferSalida == null)
 			try {
-				socket.close();
+				bufferEntrada = new DataInputStream(socket.getInputStream());
+				bufferSalida = new DataOutputStream(socket.getOutputStream());
 			} catch (Exception e) {
 			}
+			if (bufferSalida == null)
+				try {
+					socket.close();
+				} catch (Exception e) {
+				}
+		}
 	}
 
 	/**
@@ -47,8 +43,9 @@ public class Basico {
 		try {
 			bufferSalida.writeUTF(texto);
 		} catch (Exception e) {
+			bufferSalida=null;
 		}
-		//Voz.speak(texto);
+		// Voz.speak(texto);
 	}
 
 	public static void caminar(int x, int y) {
@@ -60,7 +57,8 @@ public class Basico {
 			conectar();
 		try {
 			return bufferEntrada.readUTF();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			bufferEntrada=null;
 			return "";
 		}
 	}

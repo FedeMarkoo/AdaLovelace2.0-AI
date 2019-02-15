@@ -6,7 +6,7 @@
 <hibernate-configuration>
 	<session-factory>
 		<property name="hibernate.connection.driver_class">org.sqlite.JDBC</property>
-		<property name="hibernate.connection.url">jdbc:sqlite:AdaSrc/BaseDeDatos/BD.sql</property>
+		<property name="hibernate.connection.url">jdbc:sqlite:Manager/BaseDeDatos/BD.sql</property>
 		<property name="hibernate.dialect">com.enigmabridge.hibernate.dialect.SQLiteDialect</property>
 		<property name="show_sql">false</property>
 		<property name="format_sql">false</property>

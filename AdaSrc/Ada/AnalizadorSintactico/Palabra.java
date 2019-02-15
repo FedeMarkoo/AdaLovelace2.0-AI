@@ -11,7 +11,7 @@ public class Palabra {
 	public Palabra(String palabra) {
 		this.palabra = palabra;
 		tipos = new ArrayList<String>();
-		String[] tipos = BD.tipoSintactico(palabra, 0);
+		String[] tipos = BD.tipoSintactico(palabra);
 
 		if (tipos != null)
 			for (String string : tipos)
