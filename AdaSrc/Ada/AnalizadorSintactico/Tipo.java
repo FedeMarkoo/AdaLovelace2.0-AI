@@ -2,7 +2,7 @@ package Ada.AnalizadorSintactico;
 
 import java.util.ArrayList;
 
-import BaseDeDatos.BD;
+import BaseDeDatos.BDAda;
 
 public class Tipo {
 
@@ -66,10 +66,10 @@ public class Tipo {
 		ArrayList<String> sustantivos = getJuegoPalabras().getSustantivos();
 		if(sustantivos.isEmpty())
 			return "yo";
-		return BD.getSinonimoObjeto(sustantivos.get(0));
+		return BDAda.getSinonimoObjeto(sustantivos.get(0));
 	}
 
 	public String metodo() {
-		return BD.getSinonimoVerbo(getJuegoPalabras().getVerbo().get(0));
+		return BDAda.getSinonimoVerbo(getJuegoPalabras().getVerbo().get(0));
 	}
 }

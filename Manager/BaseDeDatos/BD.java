@@ -214,21 +214,6 @@ public class BD {
 		return null;
 	}
 
-	private static String capitalizar(String clase) {
-		return (clase.charAt(0) + "").toUpperCase() + clase.substring(1).toLowerCase();
-	}
-
-//	private static String googlearTipo(String palabra) {
-//		String linea;
-//		linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);
-//		Matcher m = Pattern.compile("<h2>" + palabra + ".{0,500}(sustantivo|adjetivo|verbo)").matcher(linea);
-//		if (m.find())
-//			return m.group(1);
-//
-//		return "ignorar";
-//
-//	}
-
 	private static String[] googlearTipos(String palabra) {
 		ArrayList<String> tipos = new ArrayList<String>();
 		String linea = getContenido(palabra, "https://es.thefreedictionary.com/" + palabra);

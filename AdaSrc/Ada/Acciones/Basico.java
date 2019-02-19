@@ -10,9 +10,13 @@ public class Basico {
 	private static DataInputStream bufferEntrada = null;
 	private static DataOutputStream bufferSalida = null;
 
+	static {
+		conectar();
+	}
+
 	public static void conectar() {
 		Socket socket = null;
-		while (socket == null) {
+		while (bufferSalida == null || bufferEntrada == null) {
 			try {
 				socket = new Socket(InetAddress.getLocalHost(), 5050);
 			} catch (Exception e) {
@@ -22,7 +26,7 @@ public class Basico {
 				bufferSalida = new DataOutputStream(socket.getOutputStream());
 			} catch (Exception e) {
 			}
-			if (bufferSalida == null)
+			if (bufferSalida == null || bufferEntrada == null)
 				try {
 					socket.close();
 				} catch (Exception e) {
@@ -43,7 +47,7 @@ public class Basico {
 		try {
 			bufferSalida.writeUTF(texto);
 		} catch (Exception e) {
-			bufferSalida=null;
+			conectar();
 		}
 		// Voz.speak(texto);
 	}
@@ -58,8 +62,8 @@ public class Basico {
 		try {
 			return bufferEntrada.readUTF();
 		} catch (Exception e) {
-			bufferEntrada=null;
-			return "";
+			conectar();
+			return escuchar();
 		}
 	}
 }

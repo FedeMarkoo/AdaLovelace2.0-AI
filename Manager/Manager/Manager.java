@@ -14,7 +14,6 @@ import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import BaseDeDatos.BD;
-import BaseDeDatos.BDAda;
+import BaseDeDatos.BDAdaManager;
 import BaseDeDatos.MapeoClase;
 
 public class Manager {
@@ -34,8 +33,11 @@ public class Manager {
 	private static DataInputStream bufferEntrada;
 	private static JTextField escucha;
 	private static JTextArea dice;
+	public static boolean adaManagerThreadIsRunning = false;
 	public static Thread adaManagerThread = new Thread() {
+
 		public void run() {
+			adaManagerThreadIsRunning = true;
 			System.out.println("run");
 			this.setName("AdaManagerThread");
 			Date modificado = new Date(0);
@@ -47,18 +49,19 @@ public class Manager {
 				modificado = ultimo;
 				recompilar();
 			}
+			adaManagerThreadIsRunning = false;
 		}
 	};
 
 	private static Thread bdAdaManger = new Thread() {
 		public void run() {
-			BDAda bdAda = new BDAda();
-			try {
-				Method method = BD.class.getMethod((String) bdAda.recibirComando());
-				Object invoke = method.invoke(1, bdAda.recibirComando());
-				bdAda.enviarComando(invoke);
-			} catch (Exception e) {
-			}
+			while (true)
+				try {
+					Method method = BD.class.getMethod((String) BDAdaManager.recibirComando());
+					Object invoke = method.invoke(1, BDAdaManager.recibirComando());
+					BDAdaManager.enviarComando(invoke);
+				} catch (Exception e) {
+				}
 		}
 	};
 
@@ -150,7 +153,6 @@ public class Manager {
 					try {
 						System.out.println("Conectando Socket");
 						adaManager();
-						bdAdaManger.start();
 						Socket socket = serversock.accept();
 						System.out.println("Socket conectado");
 						DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
@@ -193,8 +195,10 @@ public class Manager {
 
 	private void adaManager() {
 		System.out.println("adaManager");
-		if (!adaManagerThread.isAlive())
+		if (!adaManagerThreadIsRunning) {
 			adaManagerThread.start();
+			bdAdaManger.start();
+		}
 	}
 
 	private static Process recompilar() {
@@ -208,7 +212,7 @@ public class Manager {
 
 		try {
 			System.out.println("Corriendo ANT");
-			Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
+			// Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

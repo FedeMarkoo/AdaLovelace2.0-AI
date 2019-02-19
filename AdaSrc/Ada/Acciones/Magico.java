@@ -7,13 +7,13 @@ import java.util.Scanner;
 
 import Ada.AdaLovelace;
 import Ada.AnalizadorSintactico.Tipo;
-import BaseDeDatos.BD;
+import BaseDeDatos.BDAda;
 import BaseDeDatos.MapeoClase;
 
 public class Magico {
 
 	public static String ejecutar(String mensaje) {
-		Tipo deco = BD.decodificar(mensaje.toLowerCase());
+		Tipo deco = BDAda.decodificar(mensaje.toLowerCase());
 		return ejecutar(deco, mensaje);
 	}
 
@@ -47,7 +47,7 @@ public class Magico {
 				"No entiendo lo que me estas pidiendo... \n" + clase + " es un sinomimo de un objeto ya registrado?");
 		if (AdaLovelace.escuchar().contains("si")) {
 			AdaLovelace.decir("Decime cual es su sinonimo");
-			if (BD.cargarSinonimoSustantivo(clase, AdaLovelace.escuchar())) {
+			if (BDAda.cargarSinonimoSustantivo(clase, AdaLovelace.escuchar())) {
 				AdaLovelace.decir("Carga realiada con exito");
 				return ejecutar(tipo, mensaje);
 			} else
@@ -63,7 +63,7 @@ public class Magico {
 				"No entiendo lo que me estas pidiendo... \n" + verbo + " es un sinomimo de una accion ya registrada?");
 		if (AdaLovelace.escuchar().contains("si")) {
 			AdaLovelace.decir("Decime cual es su sinonimo");
-			if (BD.cargarSinonimoVerbo(verbo, AdaLovelace.escuchar())) {
+			if (BDAda.cargarSinonimoVerbo(verbo, AdaLovelace.escuchar())) {
 				AdaLovelace.decir("Carga realiada con exito");
 				return ejecutar(tipo, mensaje);
 			} else
@@ -108,7 +108,7 @@ public class Magico {
 
 	public static boolean agregarAtributo(String clase, String atributo) {
 		String texto = leerClase(clase);
-		texto = texto.replaceFirst("{", "{\n\t public " + BD.getTipoDato(atributo) + " " + atributo + ";");
+		texto = texto.replaceFirst("{", "{\n\t public " + BDAda.getTipoDato(atributo) + " " + atributo + ";");
 		return escribirArchivo(clase, texto);
 	}
 
@@ -128,7 +128,7 @@ public class Magico {
 
 	private static boolean escribirArchivo(String clase, String texto) {
 		try {
-			BD.ingresarClase(new MapeoClase(clase, texto, Instant.now().toString()));
+			BDAda.ingresarClase(new MapeoClase(clase, texto, Instant.now().toString()));
 			AdaLovelace.decir("Clase-Actualizada-RECOMPILAR-COD:92929");
 			System.exit(0);
 			return true;

@@ -2,7 +2,9 @@ package Ada.AnalizadorSintactico;
 
 import java.util.ArrayList;
 
-import BaseDeDatos.BD;
+import BaseDeDatos.BDAda;
+
+
 
 public class Palabra {
 	public String palabra;
@@ -11,10 +13,10 @@ public class Palabra {
 	public Palabra(String palabra) {
 		this.palabra = palabra;
 		tipos = new ArrayList<String>();
-		String[] tipos = BD.tipoSintactico(palabra);
+		String[] tiposarray = BDAda.tipoSintactico(palabra);
 
-		if (tipos != null)
-			for (String string : tipos)
+		if (tiposarray != null)
+			for (String string :tiposarray)
 				this.tipos.add(string);
 
 	}
