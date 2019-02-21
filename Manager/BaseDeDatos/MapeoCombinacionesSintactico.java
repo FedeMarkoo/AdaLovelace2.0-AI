@@ -3,9 +3,12 @@ package BaseDeDatos;
 public class MapeoCombinacionesSintactico {
 
 	private String combo;
-
+	
 	public MapeoCombinacionesSintactico(String combo) {
 		this.combo = combo;
+	}
+
+	public MapeoCombinacionesSintactico() {
 	}
 
 	public String getCombo() {

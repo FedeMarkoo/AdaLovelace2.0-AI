@@ -1,5 +1,7 @@
 package BaseDeDatos;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
@@ -20,10 +22,19 @@ public class BDAda {
 				socket = new Socket(InetAddress.getLocalHost(), 5051);
 			} catch (Exception e) {
 			}
+			InputStream inputStream = null;
 			try {
-				bufferEntrada = new ObjectInputStream(socket.getInputStream());
+				inputStream = socket.getInputStream();
+			} catch (Exception e1) {
+			}
+			try {
 				bufferSalida = new ObjectOutputStream(socket.getOutputStream());
 			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				bufferEntrada = new ObjectInputStream(inputStream);
+			} catch (IOException e1) {
 			}
 			if (bufferSalida == null || bufferEntrada == null)
 				try {

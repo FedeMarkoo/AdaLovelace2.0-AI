@@ -1,5 +1,6 @@
 package BaseDeDatos;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -17,25 +18,24 @@ public class BDAdaManager {
 
 	public static void conectar() {
 		socket = null;
-		while (socket == null) {
-			try {
-				serversock = new ServerSocket(5051);
-				socket = serversock.accept();
-			} catch (Exception e) {
-			}
-			try {
-				bufferEntrada = new ObjectInputStream(socket.getInputStream());
-				bufferSalida = new ObjectOutputStream(socket.getOutputStream());
-			} catch (Exception e) {
-			}
-			if (bufferSalida == null || bufferEntrada == null)
-				try {
-					socket.close();
-					socket = null;
-				} catch (Exception e) {
-				}
+		try {
+			serversock = new ServerSocket(5051);
+		} catch (IOException e1) {
 		}
-
+		try {
+			socket = serversock.accept();
+		} catch (Exception e) {
+		}
+		try {
+			bufferEntrada = new ObjectInputStream(socket.getInputStream());
+			bufferSalida = new ObjectOutputStream(socket.getOutputStream());
+		} catch (Exception e) {
+		}
+		if (bufferSalida == null || bufferEntrada == null)
+			try {
+				socket.close();
+			} catch (Exception e) {
+			}
 	}
 
 	public static void enviarComando(Object parametros) {

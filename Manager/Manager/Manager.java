@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import Ada.AnalizadorSintactico.Palabra;
 import BaseDeDatos.BD;
 import BaseDeDatos.BDAdaManager;
 import BaseDeDatos.MapeoClase;
@@ -57,10 +58,28 @@ public class Manager {
 		public void run() {
 			while (true)
 				try {
-					Method method = BD.class.getMethod((String) BDAdaManager.recibirComando());
-					Object invoke = method.invoke(1, BDAdaManager.recibirComando());
-					BDAdaManager.enviarComando(invoke);
+					Method method = null;
+					try {
+						method = BD.class.getMethod((String) BDAdaManager.recibirComando(), String.class);
+					} catch (Exception e) {
+						try {
+							method = BD.class.getMethod((String) BDAdaManager.recibirComando(), Palabra.class);
+						} catch (Exception e1) {
+							try {
+								method = BD.class.getMethod((String) BDAdaManager.recibirComando(), Manager.class);
+							} catch (Exception e2) {
+								try {
+									method = BD.class.getMethod((String) BDAdaManager.recibirComando());
+								} catch (Exception e3) {
+								}
+							}
+
+						}
+					}
+					Object retorno = method.invoke(1, BDAdaManager.recibirComando());
+					BDAdaManager.enviarComando(retorno);
 				} catch (Exception e) {
+					e.printStackTrace();
 				}
 		}
 	};
