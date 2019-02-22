@@ -227,7 +227,7 @@ public class BD {
 	}
 
 	@SuppressWarnings("all")
-	private static String[] tipoSintactico(String palabra, int nivel) {
+	public static String[] tipoSintactico(String palabra, int nivel) {
 		if (nivel == 2)
 			ingresarTipo(palabra, "ignorar");
 		try {

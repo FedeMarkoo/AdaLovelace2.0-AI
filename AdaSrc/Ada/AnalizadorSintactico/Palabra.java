@@ -1,19 +1,24 @@
 package Ada.AnalizadorSintactico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-import BaseDeDatos.BDAda;
+import BaseDeDatos.BD;
 
 
 
-public class Palabra {
+public class Palabra implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3509553821412970665L;
 	public String palabra;
 	public ArrayList<String> tipos;
 
 	public Palabra(String palabra) {
 		this.palabra = palabra;
 		tipos = new ArrayList<String>();
-		String[] tiposarray = BDAda.tipoSintactico(palabra);
+		String[] tiposarray = BD.tipoSintactico(palabra,0);
 
 		if (tiposarray != null)
 			for (String string :tiposarray)

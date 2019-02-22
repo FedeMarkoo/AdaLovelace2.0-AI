@@ -48,6 +48,7 @@ public class BDAda {
 
 	public static void enviarComando(Object parametros) {
 		try {
+			System.out.println("Se envia " + parametros);
 			bufferSalida.writeObject(parametros);
 		} catch (Exception e) {
 			conectar();
@@ -57,7 +58,9 @@ public class BDAda {
 
 	public static Object recibirComando() {
 		try {
-			return bufferEntrada.readObject();
+			Object retorno = bufferEntrada.readObject();
+			System.out.println("Se recibe " + retorno);
+			return retorno;
 		} catch (Exception e) {
 			conectar();
 			return recibirComando();

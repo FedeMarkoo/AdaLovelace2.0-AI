@@ -2,7 +2,7 @@ package Ada.AnalizadorSintactico;
 
 import java.util.ArrayList;
 
-import BaseDeDatos.BDAda;
+import BaseDeDatos.BD;
 
 public class AnalizadorSintactico {
 
@@ -10,7 +10,7 @@ public class AnalizadorSintactico {
 
 	private static ArrayList<String> cargarCombinaciones() {
 		ArrayList<String> combo = new ArrayList<String>();
-		combo.addAll(BDAda.getCombinacionesSintactico());
+		combo.addAll(BD.getCombinacionesSintactico());
 		return combo;
 	}
 

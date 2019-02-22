@@ -1,11 +1,16 @@
 package Ada.AnalizadorSintactico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import BaseDeDatos.BDAda;
 
-public class Tipo {
+public class Tipo implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8357347381264347906L;
 	private boolean match;
 	private JuegoPalabras juego;
 

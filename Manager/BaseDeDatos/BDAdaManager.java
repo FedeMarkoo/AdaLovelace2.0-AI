@@ -41,14 +41,19 @@ public class BDAdaManager {
 	public static void enviarComando(Object parametros) {
 		try {
 			bufferSalida.writeObject(parametros);
+			System.out.println("Se envia " + parametros);
 		} catch (Exception e) {
+			e.printStackTrace();
 			conectar();
+			enviarComando(parametros);
 		}
 	}
 
 	public static Object recibirComando() {
 		try {
-			return bufferEntrada.readObject();
+			Object retorno = bufferEntrada.readObject();
+			System.out.println("Se recibe " + retorno);
+			return retorno;
 		} catch (Exception e) {
 			conectar();
 			return recibirComando();

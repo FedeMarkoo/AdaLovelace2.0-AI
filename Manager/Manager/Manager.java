@@ -59,24 +59,26 @@ public class Manager {
 			while (true)
 				try {
 					Method method = null;
+					String methodName = (String) BDAdaManager.recibirComando();
+					String parametro = (String) BDAdaManager.recibirComando();
 					try {
-						method = BD.class.getMethod((String) BDAdaManager.recibirComando(), String.class);
+						method = BD.class.getMethod(methodName, String.class);
 					} catch (Exception e) {
 						try {
-							method = BD.class.getMethod((String) BDAdaManager.recibirComando(), Palabra.class);
+							method = BD.class.getMethod(methodName, Palabra.class);
 						} catch (Exception e1) {
 							try {
-								method = BD.class.getMethod((String) BDAdaManager.recibirComando(), Manager.class);
+								method = BD.class.getMethod(methodName, Manager.class);
 							} catch (Exception e2) {
 								try {
-									method = BD.class.getMethod((String) BDAdaManager.recibirComando());
+									method = BD.class.getMethod(methodName);
 								} catch (Exception e3) {
 								}
 							}
 
 						}
 					}
-					Object retorno = method.invoke(1, BDAdaManager.recibirComando());
+					Object retorno = method.invoke(1, parametro);
 					BDAdaManager.enviarComando(retorno);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -95,6 +97,7 @@ public class Manager {
 
 	public Manager() {
 		System.out.println("Manager");
+		BD.conectar();
 		initialize();
 		frame.setVisible(true);
 	}
@@ -139,6 +142,7 @@ public class Manager {
 			}
 		});
 		escucha.setEnabled(false);
+		bdAdaManger.start();
 
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
@@ -162,17 +166,19 @@ public class Manager {
 	private void conectar() {
 		System.out.println("conectar");
 		new Thread() {
+			@SuppressWarnings("resource")
 			public void run() {
 				ServerSocket serversock = null;
 				try {
 					serversock = new ServerSocket(5050);
 				} catch (Exception e2) {
 				}
+				Socket socket = null;
 				while (true)
 					try {
 						System.out.println("Conectando Socket");
 						adaManager();
-						Socket socket = serversock.accept();
+						socket = serversock.accept();
 						System.out.println("Socket conectado");
 						DataOutputStream bufferDeSalida = new DataOutputStream(socket.getOutputStream());
 						DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
@@ -198,7 +204,7 @@ public class Manager {
 						e.printStackTrace();
 						escucha.setEnabled(false);
 						try {
-							serversock.close();
+							socket.close();
 						} catch (Exception e1) {
 						}
 					}
@@ -215,8 +221,18 @@ public class Manager {
 	private void adaManager() {
 		System.out.println("adaManager");
 		if (!adaManagerThreadIsRunning) {
-			adaManagerThread.start();
-			bdAdaManger.start();
+			adaManagerThreadIsRunning = true;
+			System.out.println("run");
+			Date modificado = new Date(0);
+			// String last = BD.getUltimaModificacion();
+			String last = "2007-12-03T10:15:30.00Z";
+			// 2007-12-03T10:15:30.00Z.
+			Date ultimo = Date.from(Instant.parse(last));
+			if (modificado.before(ultimo)) {
+				modificado = ultimo;
+				recompilar();
+			}
+			adaManagerThreadIsRunning = false;
 		}
 	}
 
@@ -231,7 +247,7 @@ public class Manager {
 
 		try {
 			System.out.println("Corriendo ANT");
-			// Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
+			Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

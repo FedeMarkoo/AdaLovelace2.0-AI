@@ -1,9 +1,14 @@
 package Ada.AnalizadorSintactico;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class JuegoPalabras {
+public class JuegoPalabras implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4763752118062072667L;
 	private ArrayList<String> sustantivos = new ArrayList<String>();
 	private ArrayList<String> verbos = new ArrayList<String>();
 	private ArrayList<String> adjetivo = new ArrayList<String>();
