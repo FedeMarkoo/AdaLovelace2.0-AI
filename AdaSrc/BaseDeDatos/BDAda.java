@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.List;
 
+import Ada.Acciones.Basico;
+import Ada.AnalizadorSintactico.AnalizadorSintactico;
 import Ada.AnalizadorSintactico.Palabra;
 import Ada.AnalizadorSintactico.Tipo;
 
@@ -67,71 +69,121 @@ public class BDAda {
 		}
 	}
 
+	private static Tipo decodificarPorFrase(String texto) {
+		Tipo comboSintactico = AnalizadorSintactico.analizar(texto);
+		if (comboSintactico == null)
+			if (ingresarCombo(texto))
+				return decodificarPorFrase(texto);
+			else
+				Basico.decir("No se reconoce la oracion");
+		return comboSintactico;
+	}
+
 	public static Tipo decodificar(String texto) {
-		enviarComando("decodificar");
-		enviarComando(texto);
-		return (Tipo) recibirComando();
+		Tipo deco = decodificarPorFrase(texto);
+		return deco;
+	}
+
+	private static boolean ingresarCombo(String texto) {
+		Basico.decir("Desea ingresar el tipo de oracion?");
+		String escuchar = Basico.escuchar();
+		if (escuchar.contains("s")) {
+			Basico.decir("Por favor, ingrese como se compone la oracion.");
+			Basico.decir("Por ejemplo, Sustantivo verbo sustantico adjetivo");
+			Basico.decir("Puede usarse el caracter ? para indicar que una palabra es opcional");
+			String combo = Basico.escuchar();
+			if (cargarCombo(combo)) {
+				Basico.decir("Carga realizada con exito.");
+				return false;
+			} else
+				Basico.decir("Fallo al cargar la compocicion sintactica");
+		}
+		return false;
+	}
+
+	public static String[] tipoSintactico(String palabra) {
+		enviarComando("tipoSintactico");
+		enviarComando(1);
+		enviarComando(palabra);
+		return (String[]) recibirComando();
+	}
+
+	public static boolean cargarCombo(String cad) {
+		enviarComando("cargarCombo");
+		enviarComando(1);
+		enviarComando(cad);
+		return (boolean) recibirComando();
 	}
 
 	public static String getTipo(String cad) {
 		enviarComando("getTipo");
+		enviarComando(1);
 		enviarComando(cad);
 		return (String) recibirComando();
 	}
 
 	public static String getSinonimoVerbo(String cad) {
 		enviarComando("getSinonimoVerbo");
+		enviarComando(1);
 		enviarComando(cad);
 		return (String) recibirComando();
 	}
 
 	public static String getSinonimoObjeto(String cad) {
 		enviarComando("getSinonimoVerbo");
+		enviarComando(1);
 		enviarComando(cad);
 		return (String) recibirComando();
 	}
 
 	public static boolean ingresarPalabra(Palabra palabra) {
 		enviarComando("ingresarPalabra");
+		enviarComando(1);
 		enviarComando(palabra);
 		return (boolean) recibirComando();
 	}
 
 	public static boolean ingresarTipo(String palabra, String tipo) {
-		String[] param = new String[] { palabra, tipo };
 		enviarComando("ingresarTipo");
-		enviarComando(param);
+		enviarComando(2);
+		enviarComando(palabra);
+		enviarComando(tipo);
 		return (boolean) recibirComando();
 	}
 
 	public static boolean cargarSinonimoSustantivo(String objeto, String sinonimo) {
-		String[] param = new String[] { objeto, sinonimo };
 		enviarComando("cargarSinonimoSustantivo");
-		enviarComando(param);
+		enviarComando(2);
+		enviarComando(objeto);
+		enviarComando(sinonimo);
 		return (boolean) recibirComando();
 	}
 
 	public static boolean cargarSinonimoVerbo(String accion, String sinonimo) {
-		String[] param = new String[] { accion, sinonimo };
 		enviarComando("cargarSinonimoVerbo");
-		enviarComando(param);
+		enviarComando(2);
+		enviarComando(accion);
+		enviarComando(sinonimo);
 		return (boolean) recibirComando();
 	}
 
 	public static boolean crearMetodo(String accion) {
 		enviarComando("crearMetodo");
+		enviarComando(1);
 		enviarComando(accion);
 		return (boolean) recibirComando();
 	}
 
 	public static boolean crearClase(String clase) {
 		enviarComando("crearClase");
+		enviarComando(1);
 		enviarComando(clase);
 		return (Boolean) recibirComando();
 	}
 
 	public static String getTipoDato(String atributo) {
 		enviarComando("getTipoDato");
+		enviarComando(1);
 		enviarComando(atributo);
 		return (String) recibirComando();
 	}
@@ -139,32 +191,27 @@ public class BDAda {
 	@SuppressWarnings("unchecked")
 	public static List<String> getCombinacionesSintactico() {
 		enviarComando("getCombinacionesSintactico");
-		enviarComando(null);
+		enviarComando(0);
 		return (List<String>) recibirComando();
 	}
 
 	public static String getUltimaModificacion() {
 		enviarComando("getUltimaModificacion");
-		enviarComando(null);
+		enviarComando(0);
 		return (String) recibirComando();
 	}
 
 	@SuppressWarnings("unchecked")
 	public static List<MapeoClase> getClases() {
 		enviarComando("getClases");
-		enviarComando(null);
+		enviarComando(0);
 		return (List<MapeoClase>) recibirComando();
 	}
 
 	public static boolean ingresarClase(MapeoClase mapeoClase) {
 		enviarComando("ingresarClase");
+		enviarComando(1);
 		enviarComando(mapeoClase);
 		return (boolean) recibirComando();
-	}
-
-	public static String[] tipoSintactico(String palabra) {
-		enviarComando("tipoSintactico");
-		enviarComando(palabra);
-		return (String[]) recibirComando();
 	}
 }

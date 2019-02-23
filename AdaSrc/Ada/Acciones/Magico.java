@@ -103,7 +103,7 @@ public class Magico {
 
 	private static boolean crearClase(String clase) {
 		String texto = "package Objetos;\n\npublic class " + clase + " extends Objeto\n{\n}";
-		return escribirArchivo(clase, texto);// && BD.crearClase(clase);
+		return escribirArchivo(clase, texto);
 	}
 
 	public static boolean agregarAtributo(String clase, String atributo) {
@@ -123,7 +123,7 @@ public class Magico {
 			else
 				codigo += "return \"faltante de return\";";
 		texto += "\tpublic static String " + metodo + "(String mesaje){\n" + codigo + "\n}\n}";
-		return escribirArchivo(clase, texto);// && BD.crearMetodo(metodo);
+		return escribirArchivo(clase, texto);
 	}
 
 	private static boolean escribirArchivo(String clase, String texto) {

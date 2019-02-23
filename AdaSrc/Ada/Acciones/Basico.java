@@ -45,7 +45,7 @@ public class Basico {
 		if (bufferSalida == null)
 			conectar();
 		try {
-			bufferSalida.writeUTF(texto);
+			bufferSalida.writeUTF(texto.toLowerCase());
 		} catch (Exception e) {
 			conectar();
 		}

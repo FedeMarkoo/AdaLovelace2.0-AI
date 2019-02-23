@@ -3,7 +3,7 @@ package Ada.AnalizadorSintactico;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import BaseDeDatos.BD;
+import BaseDeDatos.BDAda;
 
 
 
@@ -18,12 +18,10 @@ public class Palabra implements Serializable {
 	public Palabra(String palabra) {
 		this.palabra = palabra;
 		tipos = new ArrayList<String>();
-		String[] tiposarray = BD.tipoSintactico(palabra,0);
-
+		String[] tiposarray = BDAda.tipoSintactico(palabra);
 		if (tiposarray != null)
 			for (String string :tiposarray)
 				this.tipos.add(string);
-
 	}
 
 	public Palabra() {
@@ -46,7 +44,7 @@ public class Palabra implements Serializable {
 	}
 
 	public boolean isSigno() {
-		return palabra.matches("\\W*");
+		return palabra.matches("[^a-z]*");
 	}
 
 	public boolean ignorar() {

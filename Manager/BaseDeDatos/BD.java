@@ -18,57 +18,31 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
-import Ada.Acciones.Basico;
-import Ada.AnalizadorSintactico.AnalizadorSintactico;
 import Ada.AnalizadorSintactico.Palabra;
-import Ada.AnalizadorSintactico.Tipo;
 
 public class BD {
-
 	private static SessionFactory factory;
 	private static Session session = conectar();
 	private static final Pattern compile = Pattern.compile("<br>\\s*<i>\\s*([\\wá-ú]+)\\s*<\\/i>");
 
 	public static Session conectar() {
-		Configuration conf = new Configuration();
-		conf.configure("BaseDeDatos/hibernate.cfg.xml");
-		factory = conf.buildSessionFactory();
-		return session = factory.openSession();
+		boolean conectado = false;
+		while (!conectado)
+			try {
+				Configuration conf = new Configuration();
+				conf.configure("BaseDeDatos/hibernate.cfg.xml");
+				factory = conf.buildSessionFactory();
+				session = factory.openSession();
+				conectado = true;
+				return session;
+			} catch (Exception e) {
+				e.printStackTrace();
+				conectado = false;
+			}
+		return null;
 	}
 
-	public static Tipo decodificar(String texto) {
-		Tipo deco = decodificarPorFrase(texto);
-		return deco;
-	}
-
-	private static Tipo decodificarPorFrase(String texto) {
-		Tipo comboSintactico = AnalizadorSintactico.analizar(texto);
-		if (comboSintactico == null)
-			if (ingresarCombo(texto))
-				return decodificarPorFrase(texto);
-			else
-				Basico.decir("No se reconoce la oracion");
-		return comboSintactico;
-	}
-
-	private static boolean ingresarCombo(String texto) {
-		Basico.decir("Desea ingresar el tipo de oracion?");
-		String escuchar = Basico.escuchar();
-		if (escuchar.contains("s")) {
-			Basico.decir("Por favor, ingrese como se compone la oracion.");
-			Basico.decir("Por ejemplo, Sustantivo verbo sustantico adjetivo");
-			Basico.decir("Puede usarse el caracter ? para indicar que una palabra es opcional");
-			String combo = Basico.escuchar();
-			if (BD.cargarCombo(combo)) {
-				Basico.decir("Carga realizada con exito.");
-				return false;
-			} else
-				Basico.decir("Fallo al cargar la compocicion sintactica");
-		}
-		return false;
-	}
-
-	private static boolean cargarCombo(String combo) {
+	public static boolean cargarCombo(String combo) {
 		Transaction tx = session.beginTransaction();
 		try {
 			session.save(new MapeoCombinacionesSintactico(combo));
@@ -226,8 +200,12 @@ public class BD {
 		return linea;
 	}
 
+	public static String[] tipoSintactico(String palabra) {
+		return tipoSintactico(palabra, 0);
+	}
+
 	@SuppressWarnings("all")
-	public static String[] tipoSintactico(String palabra, int nivel) {
+	private static String[] tipoSintactico(String palabra, int nivel) {
 		if (nivel == 2)
 			ingresarTipo(palabra, "ignorar");
 		try {
@@ -307,10 +285,6 @@ public class BD {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	public static String[] tipoSintactico(String palabra) {
-		return tipoSintactico(palabra, 0);
 	}
 
 }

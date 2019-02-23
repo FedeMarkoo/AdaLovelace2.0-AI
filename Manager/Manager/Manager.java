@@ -1,3 +1,4 @@
+
 package Manager;
 
 import java.awt.GridBagConstraints;
@@ -56,29 +57,45 @@ public class Manager {
 
 	private static Thread bdAdaManger = new Thread() {
 		public void run() {
+			Class<BD> claseBD = BD.class;
 			while (true)
 				try {
 					Method method = null;
 					String methodName = (String) BDAdaManager.recibirComando();
-					String parametro = (String) BDAdaManager.recibirComando();
+					int cantidad = (int) BDAdaManager.recibirComando();
+					int offset=cantidad;
+					Object[] parametro = new Object[cantidad];
+					while (offset--> 0)
+						parametro[offset] = BDAdaManager.recibirComando();
 					try {
-						method = BD.class.getMethod(methodName, String.class);
+						method = claseBD.getMethod(methodName, String.class);
 					} catch (Exception e) {
 						try {
-							method = BD.class.getMethod(methodName, Palabra.class);
+							method = claseBD.getMethod(methodName, Palabra.class);
 						} catch (Exception e1) {
 							try {
-								method = BD.class.getMethod(methodName, Manager.class);
+								method = claseBD.getMethod(methodName, Manager.class);
 							} catch (Exception e2) {
 								try {
-									method = BD.class.getMethod(methodName);
+									method = claseBD.getMethod(methodName);
 								} catch (Exception e3) {
 								}
 							}
 
 						}
 					}
-					Object retorno = method.invoke(1, parametro);
+					Object retorno;
+					switch (cantidad) {
+					case 1:
+						retorno = method.invoke(1, parametro[0]);
+						break;
+					case 2:
+						retorno = method.invoke(2, parametro[0], parametro[1]);
+						break;
+					default:
+						retorno = method.invoke(0);
+						break;
+					}
 					BDAdaManager.enviarComando(retorno);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -184,21 +201,16 @@ public class Manager {
 						DataInputStream bufferDeEntrada = new DataInputStream(socket.getInputStream());
 						setBuffers(bufferDeSalida, bufferDeEntrada);
 						escucha.setEnabled(true);
-						try {
-							while (true) {
-								String readUTF = bufferEntrada.readUTF();
-								if (readUTF.contains("Clase-Actualizada-RECOMPILAR-COD:92929"))
-									adaManagerThread.start();
+						while (true) {
+							String readUTF = bufferEntrada.readUTF();
+							if (readUTF.contains("Clase-Actualizada-RECOMPILAR-COD:92929"))
+								adaManagerThread.start();
 
-								else {
-									dice.append((anterior.equals("Ada") ? "\n" : "\n\nAda:\n") + readUTF);
-									anterior = "Ada";
-								}
-
+							else {
+								dice.append((anterior.equals("Ada") ? "\n" : "\n\nAda:\n") + readUTF);
+								anterior = "Ada";
 							}
-						} catch (Exception e) {
 						}
-
 					} catch (Exception e) {
 						System.out.println("Error en socket");
 						e.printStackTrace();
@@ -247,7 +259,7 @@ public class Manager {
 
 		try {
 			System.out.println("Corriendo ANT");
-			Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
+			// Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
