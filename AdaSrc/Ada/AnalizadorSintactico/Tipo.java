@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import BaseDeDatos.BDAda;
 
-public class Tipo implements Serializable{
+public class Tipo implements Serializable {
 
 	/**
 	 * 
@@ -17,7 +17,7 @@ public class Tipo implements Serializable{
 	public Tipo(String combinacion, String mensaje) {
 		juego = new JuegoPalabras();
 		ArrayList<Palabra> palabraTemp = new ArrayList<Palabra>();
-		for (String palabra : mensaje.split(" ")) {
+		for (String palabra : mensaje.split("[^a-z]")) {
 			palabraTemp.add(new Palabra(palabra));
 		}
 
@@ -33,7 +33,7 @@ public class Tipo implements Serializable{
 			if (!palabra.match(tipo))
 				if (palabra.isAdverbio() || palabra.isSigno() || palabra.ignorar())
 					desface++;
-				else if (tipo.contains("?")) {
+				else if (opcional(tipo)) {
 					desface--;
 					indice++;
 				} else {
@@ -47,9 +47,11 @@ public class Tipo implements Serializable{
 					juego.addSustantivo(palabra.palabra);
 					break;
 				case "adjetivo":
+				case "determinante":
 					juego.addAdjetivo(palabra.palabra);
 					break;
 				case "interjección":
+				case "adverbio":
 				case "verbo":
 					juego.addVerbo(palabra.palabra);
 					break;
@@ -57,6 +59,10 @@ public class Tipo implements Serializable{
 			}
 		}
 		match = true;
+	}
+
+	private boolean opcional(String tipo) {
+		return tipo.contains("?");
 	}
 
 	public boolean match() {
@@ -69,7 +75,7 @@ public class Tipo implements Serializable{
 
 	public String clase() {
 		ArrayList<String> sustantivos = getJuegoPalabras().getSustantivos();
-		if(sustantivos.isEmpty())
+		if (sustantivos.isEmpty())
 			return "yo";
 		return BDAda.getSinonimoObjeto(sustantivos.get(0));
 	}

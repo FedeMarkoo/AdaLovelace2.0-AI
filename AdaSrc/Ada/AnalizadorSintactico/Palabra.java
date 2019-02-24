@@ -30,7 +30,7 @@ public class Palabra implements Serializable {
 	public Palabra(String cad, String escuchar) {
 		this.palabra = cad;
 		tipos = new ArrayList<String>();
-		for (String string : escuchar.split(",")) {
+		for (String string : escuchar.split("[^a-z\\?]*")) {
 			tipos.add(string.trim());
 		}
 	}
@@ -44,7 +44,7 @@ public class Palabra implements Serializable {
 	}
 
 	public boolean isSigno() {
-		return palabra.matches("[^a-z]*");
+		return palabra.matches("[^a-z]+");
 	}
 
 	public boolean ignorar() {

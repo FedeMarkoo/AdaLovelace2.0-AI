@@ -1,7 +1,5 @@
 package BaseDeDatos;
 
-import javax.persistence.*;
-
 public class MapeoSintactico {
 
 	private String palabra;

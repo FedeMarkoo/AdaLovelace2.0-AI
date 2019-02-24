@@ -1,6 +1,7 @@
 
 package Manager;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -19,8 +20,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 import Ada.AnalizadorSintactico.Palabra;
 import BaseDeDatos.BD;
@@ -34,7 +38,7 @@ public class Manager {
 	private static DataOutputStream bufferSalida;
 	private static DataInputStream bufferEntrada;
 	private static JTextField escucha;
-	private static JTextArea dice;
+	private static JPanel dice;
 	public static boolean adaManagerThreadIsRunning = false;
 	public static Thread adaManagerThread = new Thread() {
 
@@ -63,9 +67,9 @@ public class Manager {
 					Method method = null;
 					String methodName = (String) BDAdaManager.recibirComando();
 					int cantidad = (int) BDAdaManager.recibirComando();
-					int offset=cantidad;
+					int offset = cantidad;
 					Object[] parametro = new Object[cantidad];
-					while (offset--> 0)
+					while (offset-- > 0)
 						parametro[offset] = BDAdaManager.recibirComando();
 					try {
 						method = claseBD.getMethod(methodName, String.class);
@@ -102,6 +106,7 @@ public class Manager {
 				}
 		}
 	};
+	private JScrollPane scrollBar;
 
 	/**
 	 * Create the application.
@@ -134,38 +139,60 @@ public class Manager {
 		gridBagLayout.rowWeights = new double[] { 1.0, 0.0, Double.MIN_VALUE };
 		frame.getContentPane().setLayout(gridBagLayout);
 
-		dice = new JTextArea();
-		dice.setEditable(false);
-		GridBagConstraints gbc_textArea = new GridBagConstraints();
-		gbc_textArea.insets = new Insets(0, 0, 5, 0);
-		gbc_textArea.fill = GridBagConstraints.BOTH;
-		gbc_textArea.gridx = 0;
-		gbc_textArea.gridy = 0;
-		frame.getContentPane().add(dice, gbc_textArea);
-
 		conectar();
 
 		escucha = new JTextField();
-		escucha.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				if (arg0.getKeyCode() != KeyEvent.VK_ENTER)
-					return;
-				String text = escucha.getText();
-				enviar(text);
-				dice.append((anterior.equals("Usted") ? "\n" : "\n\nUsted:\n") + text);
-				anterior = "Usted";
-				escucha.setText("");
-			}
-		});
-		escucha.setEnabled(false);
 		bdAdaManger.start();
+
+		dice = new JPanel();
+		dice.setBackground(Color.WHITE);
+		dice.add(Mensaje.nuevo(""), Mensaje.gbc(), dice.getComponentCount());
+		scrollBar = new JScrollPane(dice);
+		GridBagConstraints gbc_scrollBar = new GridBagConstraints();
+		gbc_scrollBar.fill = GridBagConstraints.BOTH;
+		gbc_scrollBar.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollBar.gridx = 0;
+		gbc_scrollBar.gridy = 0;
+		gbc_scrollBar.weightx = 1;
+		gbc_scrollBar.weighty = 1;
+		scrollBar.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollBar.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		frame.getContentPane().add(scrollBar, gbc_scrollBar);
+
+		GridBagLayout gbl_mensajes = new GridBagLayout();
+		gbl_mensajes.columnWidths = new int[] { 0 };
+		gbl_mensajes.rowHeights = new int[] { 0 };
+		gbl_mensajes.columnWeights = new double[] { Double.MIN_VALUE };
+		gbl_mensajes.rowWeights = new double[] { Double.MIN_VALUE };
+		dice.setLayout(gbl_mensajes);
 
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 0;
 		gbc_textField.gridy = 1;
 		frame.getContentPane().add(escucha, gbc_textField);
+
+		escucha.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+				if (arg0.getKeyCode() != KeyEvent.VK_ENTER)
+					return;
+				String mensaje = escucha.getText();
+				enviar(mensaje);
+				mensaje = (anterior.equals("Usted") ? "" : "Usted:\n") + mensaje;
+				dice.add(Mensaje.nuevo(mensaje), Mensaje.gbc(), dice.getComponentCount());
+				anterior = "Usted";
+				escucha.setText("");
+				dice.revalidate();
+				dice.repaint();
+				JScrollBar verticalScrollBar = scrollBar.getVerticalScrollBar();
+				int maximum = verticalScrollBar.getMaximum();
+				verticalScrollBar.setValue(maximum);
+				verticalScrollBar.setValue(maximum + 1);
+				verticalScrollBar.setValue(Integer.MAX_VALUE);
+			}
+		});
+		escucha.setEnabled(false);
 		escucha.setColumns(10);
 	}
 
@@ -207,15 +234,22 @@ public class Manager {
 								adaManagerThread.start();
 
 							else {
-								dice.append((anterior.equals("Ada") ? "\n" : "\n\nAda:\n") + readUTF);
+								String mensaje = (anterior.equals("Ada") ? "" : "Ada:\n") + readUTF;
+								dice.add(Mensaje.nuevo(mensaje), Mensaje.gbc(), dice.getComponentCount());
 								anterior = "Ada";
+								dice.revalidate();
+								dice.repaint();
+								JScrollBar verticalScrollBar = scrollBar.getVerticalScrollBar();
+								int maximum = verticalScrollBar.getMaximum();
+								verticalScrollBar.setValue(maximum);
+								verticalScrollBar.setValue(maximum + 1);
+								verticalScrollBar.setValue(Integer.MAX_VALUE);
 							}
 						}
 					} catch (Exception e) {
-						System.out.println("Error en socket");
-						e.printStackTrace();
-						escucha.setEnabled(false);
 						try {
+							System.out.println("Error en socket");
+							escucha.setEnabled(false);
 							socket.close();
 						} catch (Exception e1) {
 						}
@@ -259,7 +293,7 @@ public class Manager {
 
 		try {
 			System.out.println("Corriendo ANT");
-			// Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
+			Runtime.getRuntime().exec("cmd /c ant -f Manager/build.xml compile,jar,run");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
