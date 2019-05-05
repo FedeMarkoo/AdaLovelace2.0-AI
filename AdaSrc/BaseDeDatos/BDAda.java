@@ -130,7 +130,7 @@ public class BDAda {
 	}
 
 	public static String getSinonimoObjeto(String cad) {
-		enviarComando("getSinonimoVerbo");
+		enviarComando("getSinonimoObjeto");
 		enviarComando(1);
 		enviarComando(cad);
 		return (String) recibirComando();

@@ -16,7 +16,9 @@ import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -62,6 +64,10 @@ public class Manager {
 	private static Thread bdAdaManger = new Thread() {
 		public void run() {
 			Class<BD> claseBD = BD.class;
+			Hashtable<String, Method> metodos = new Hashtable<>();
+			for (Method temp : claseBD.getMethods())
+				metodos.put(temp.getName(), temp);
+
 			while (true)
 				try {
 					Method method = null;
@@ -71,33 +77,19 @@ public class Manager {
 					Object[] parametro = new Object[cantidad];
 					while (offset-- > 0)
 						parametro[offset] = BDAdaManager.recibirComando();
-					try {
-						method = claseBD.getMethod(methodName, String.class);
-					} catch (Exception e) {
-						try {
-							method = claseBD.getMethod(methodName, Palabra.class);
-						} catch (Exception e1) {
-							try {
-								method = claseBD.getMethod(methodName, Manager.class);
-							} catch (Exception e2) {
-								try {
-									method = claseBD.getMethod(methodName);
-								} catch (Exception e3) {
-								}
-							}
 
-						}
-					}
-					Object retorno;
+					method = metodos.get(methodName);
+
+					Object retorno = null;
 					switch (cantidad) {
+					case 0:
+						retorno = method.invoke(0);
+						break;
 					case 1:
 						retorno = method.invoke(1, parametro[0]);
 						break;
 					case 2:
 						retorno = method.invoke(2, parametro[0], parametro[1]);
-						break;
-					default:
-						retorno = method.invoke(0);
 						break;
 					}
 					BDAdaManager.enviarComando(retorno);

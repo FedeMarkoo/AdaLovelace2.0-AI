@@ -5,22 +5,30 @@ import java.util.ArrayList;
 
 import BaseDeDatos.BDAda;
 
-
-
 public class Palabra implements Serializable {
 	/**
 	 * 
 	 */
+	private static final String REGEX_NO_WORD = "[^a-zá-ú?]";
+
 	private static final long serialVersionUID = 3509553821412970665L;
 	public String palabra;
 	public ArrayList<String> tipos;
+	private boolean isPregunta;
 
 	public Palabra(String palabra) {
-		this.palabra = palabra;
 		tipos = new ArrayList<String>();
+		if (palabra.contains("?")) {
+			this.palabra = palabra.replace("?", "");
+			isPregunta = true;
+			tipos.add("pregunta");
+		} else {
+			this.palabra = palabra;
+			isPregunta = false;
+		}
 		String[] tiposarray = BDAda.tipoSintactico(palabra);
 		if (tiposarray != null)
-			for (String string :tiposarray)
+			for (String string : tiposarray)
 				this.tipos.add(string);
 	}
 
@@ -36,7 +44,7 @@ public class Palabra implements Serializable {
 	}
 
 	public boolean match(String tipo) {
-		return tipos.contains(tipo);
+		return tipos.contains(tipo.replace("?", ""));
 	}
 
 	public boolean isAdverbio() {
@@ -44,10 +52,14 @@ public class Palabra implements Serializable {
 	}
 
 	public boolean isSigno() {
-		return palabra.matches("[^a-z]+");
+		return palabra.matches(REGEX_NO_WORD);
 	}
 
 	public boolean ignorar() {
 		return tipos.contains("ignorar");
+	}
+
+	public boolean isPregunta() {
+		return isPregunta;
 	}
 }

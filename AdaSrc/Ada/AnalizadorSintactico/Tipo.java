@@ -7,6 +7,7 @@ import BaseDeDatos.BDAda;
 
 public class Tipo implements Serializable {
 
+	private static final String REGEX_NO_WORD = "[^a-zá-ú]";
 	/**
 	 * 
 	 */
@@ -17,16 +18,16 @@ public class Tipo implements Serializable {
 	public Tipo(String combinacion, String mensaje) {
 		juego = new JuegoPalabras();
 		ArrayList<Palabra> palabraTemp = new ArrayList<Palabra>();
-		for (String palabra : mensaje.split("[^a-z]")) {
+		for (String palabra : mensaje.split(REGEX_NO_WORD)) {
 			palabraTemp.add(new Palabra(palabra));
 		}
 
 		Palabra[] palabras = (Palabra[]) palabraTemp.toArray(new Palabra[0]);
-		String[] tipos = combinacion.split(" ");
+		String[] tipos = combinacion.split(REGEX_NO_WORD);
 		int indice = 0;
 		int desface = 0;
 		int largoCombo = tipos.length, largoPalabra = palabras.length;
-		// el desface es por los adverbios ya que no afentan al sentido de la oracion
+		// el desface es por las palabras que no afentan al sentido de la oracion
 		while (indice < largoCombo && indice + desface < largoPalabra) {
 			Palabra palabra = palabras[indice + desface];
 			String tipo = tipos[indice];
@@ -52,12 +53,16 @@ public class Tipo implements Serializable {
 					break;
 				case "interjección":
 				case "adverbio":
+				case "pregunta":
 				case "verbo":
 					juego.addVerbo(palabra.palabra);
 					break;
 				}
 			}
 		}
+		
+		if(juego.getVerbo().isEmpty())
+			juego.addVerbo("pregunta");
 		match = true;
 	}
 
@@ -74,13 +79,13 @@ public class Tipo implements Serializable {
 	}
 
 	public String clase() {
-		ArrayList<String> sustantivos = getJuegoPalabras().getSustantivos();
+		ArrayList<String> sustantivos = this.getJuegoPalabras().getSustantivos();
 		if (sustantivos.isEmpty())
 			return "yo";
 		return BDAda.getSinonimoObjeto(sustantivos.get(0));
 	}
 
 	public String metodo() {
-		return BDAda.getSinonimoVerbo(getJuegoPalabras().getVerbo().get(0));
+		return BDAda.getSinonimoVerbo(this.getJuegoPalabras().getVerbo().get(0));
 	}
 }

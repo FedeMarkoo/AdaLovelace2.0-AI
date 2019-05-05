@@ -25,7 +25,7 @@ public class Magico {
 		String metodo = juego.metodo();
 		Class<?> objeto;
 		try {
-			objeto = Class.forName("Objetos." + clase);
+ 			objeto = Class.forName("Objetos." + clase);
 		} catch (Exception e) {
 			return noReconoceElSustantivo(clase, juego, parametro);
 		}

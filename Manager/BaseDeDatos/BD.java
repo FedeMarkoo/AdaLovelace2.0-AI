@@ -118,6 +118,36 @@ public class BD {
 		}
 	}
 
+	public static boolean cargarSinonimoSustantivo(String objeto, String sinonimo) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoObjetos res = new MapeoObjetos(objeto.toLowerCase(), 1, sinonimo);
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean cargarSinonimoVerbo(String accion, String sinonimo) {
+		Transaction tx = session.beginTransaction();
+		try {
+			MapeoAcciones res = new MapeoAcciones(accion.toLowerCase(), sinonimo);
+			session.save(res);
+			tx.commit();
+			return true;
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public static boolean crearMetodo(String accion) {
 		Transaction tx = session.beginTransaction();
 		try {
